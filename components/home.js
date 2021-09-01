@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar } from 'react-native';
 
 import Pillwidget from './Pillwidget';
 import Dietwidget from './Dietwidget';
@@ -8,17 +7,32 @@ import Dietwidget from './Dietwidget';
 export default function Home() {
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.title}>Welcome</Text>
-      </View>
-      <View style={styles.taskContainer}>
-        <View style={styles.taskwidget}>
-          <Pillwidget />
+      <StatusBar barStyle="dark-content"/>
+      <ScrollView style={styles.scrollView}>
+
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Welcome</Text>
         </View>
-        <View style={styles.taskwidget}>
-          <Dietwidget />
+
+        <View style={styles.taskContainer}>
+          <View style={styles.taskwidget}>
+            <Pillwidget />
+          </View>
+          <View style={styles.taskwidget}>
+            <Dietwidget />
+          </View>
         </View>
+
+      </ScrollView>
+
+      <View styles={styles.footer}>
+
+        <View styles={styles.TaskBar}>
+
+        </View>
+
       </View>
+
     </View>
   );
 }
@@ -42,5 +56,12 @@ const styles = StyleSheet.create({
   },
   taskwidget: {
     paddingTop: 10,
+  },
+  scrollView: {
+    marginHorizontal: 20,
+  },
+  footer: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#636363'
   }
 });
