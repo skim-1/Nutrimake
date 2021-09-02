@@ -21,11 +21,27 @@ export default function TodoList({ navigation }) {
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.tasks}>
-          <TaskItem style={styles.taskitems}/>
-          <TaskItem style={styles.taskitems}/>
-          <TaskItem style={styles.taskitems}/>
-          <TaskItem style={styles.taskitems}/>
-          <TaskItem style={styles.taskitems}/>
+
+          <TouchableOpacity style={styles.taskitems}>
+            <TaskItem />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.taskitems}>
+            <TaskItem />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.taskitems}>
+            <TaskItem />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.taskitems}>
+            <TaskItem />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.taskitems}>
+            <TaskItem />
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
 
@@ -42,7 +58,7 @@ export default function TodoList({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#d9d9d9'
   },
   titleContainer: {
     paddingTop: 60,
@@ -61,21 +77,22 @@ const styles = StyleSheet.create({
     paddingBottom: 45,
   },
   footerButton: {
-    backgroundColor: 'white',
+    backgroundColor: '#d9d9d9',
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderColor: '#636363',
+    borderColor: '#383838',
     borderWidth: 1
   },
   footerText: {
     fontSize: 20,
-    color: '#636363'
+    color: '#383838'
   },
   tasks: {
     paddingTop: 15,
     alignItems: 'center'
   },
   taskitems: {
+    paddingVertical: 0,
   }
 });

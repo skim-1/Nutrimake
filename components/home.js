@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 
 
 import Pillwidget from './Pillwidget';
 import Dietwidget from './Dietwidget';
-
+import TaskItem from './task'
 
 export default function Home({navigation}) {
 
@@ -22,18 +22,18 @@ export default function Home({navigation}) {
 
         <View style={styles.taskContainer}>
 
-        <TouchableOpacity>
+          <TouchableOpacity>
+              <View style={styles.taskwidget}>
+                <Pillwidget />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
             <View style={styles.taskwidget}>
-              <Pillwidget />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity>
-          <View style={styles.taskwidget}>
-              <Dietwidget />
-          </View>
-        </TouchableOpacity>
-
+                <Dietwidget />
+            </View>
+          </TouchableOpacity>
+          
         </View>
 
       </ScrollView>
@@ -91,5 +91,5 @@ const styles = StyleSheet.create({
   },
   icons: {
 
-  }
+  },
 });
