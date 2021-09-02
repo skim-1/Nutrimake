@@ -1,10 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 
 import Pillwidget from './Pillwidget';
 import Dietwidget from './Dietwidget';
 
-export default function Home() {
+
+export default function Home({navigation}) {
+
+  const HomePressHandler = () => {
+    navigation.navigate('Home')
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content"/>
@@ -15,19 +21,34 @@ export default function Home() {
         </View>
 
         <View style={styles.taskContainer}>
-          <View style={styles.taskwidget}>
-            <Pillwidget />
+
+        <TouchableOpacity>
+            <View style={styles.taskwidget}>
+              <Pillwidget />
           </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
           <View style={styles.taskwidget}>
-            <Dietwidget />
+              <Dietwidget />
           </View>
+        </TouchableOpacity>
+
         </View>
 
       </ScrollView>
 
-      <View styles={styles.footer}>
+      <View style={styles.footer}>
 
-        <View styles={styles.TaskBar}>
+        <View style={styles.TaskBar}>
+
+          <View style={styles.iconContainer}>
+
+            <TouchableOpacity styles={styles.icons} onPress={HomePressHandler}>
+              <Text> testadfsdf </Text>
+            </TouchableOpacity>
+
+          </View>
 
         </View>
 
@@ -43,8 +64,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff'
   },
   titleContainer: {
-    paddingTop: 60,
-    paddingLeft: 35,
+    paddingTop: 50,
   },
   title: {
     fontWeight: 'bold',
@@ -62,6 +82,14 @@ const styles = StyleSheet.create({
   },
   footer: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#636363'
+    borderTopColor: '#636363',
+    paddingBottom: 45,
+    paddingLeft: 30,
+  },
+  iconContainer: {
+    paddingTop: 25
+  },
+  icons: {
+
   }
 });

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { AppLoading } from 'expo';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 
+import TaskItem from './task.js';
+
 export default function TodoList({ navigation }) {
 
   const pressHandler = () => {
@@ -10,18 +12,29 @@ export default function TodoList({ navigation }) {
 
   return (
     <View style={styles.container}>
+
       <StatusBar barStyle="dark-content"/>
+
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Your Tasks</Text>
       </View>
+
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.title}>as;dklfjas;dflkajsd;lfkjasd;flkajsd;bovcsjhbiluo;xbhliudfhalisdufhasldiufhasdliubhadvls;iubxcjvlkbhxkldjfahdlsifuhasdfulibsdvjkhbsldfjkgh</Text>
+        <View style={styles.tasks}>
+          <TaskItem style={styles.taskitems}/>
+          <TaskItem style={styles.taskitems}/>
+          <TaskItem style={styles.taskitems}/>
+          <TaskItem style={styles.taskitems}/>
+          <TaskItem style={styles.taskitems}/>
+        </View>
       </ScrollView>
+
       <View style={styles.footer}>
         <TouchableOpacity style={styles.footerButton} onPress={pressHandler}>
           <Text style={styles.footerText}>Dismiss</Text>
         </TouchableOpacity>
       </View>
+
     </View>
   );
 }
@@ -58,5 +71,11 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 20,
     color: '#636363'
+  },
+  tasks: {
+    paddingTop: 15,
+    alignItems: 'center'
+  },
+  taskitems: {
   }
 });
