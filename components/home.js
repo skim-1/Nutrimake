@@ -45,7 +45,7 @@ export default function Home({navigation}) {
           <View style={styles.iconContainer}>
 
             <TouchableOpacity styles={styles.icons} onPress={HomePressHandler}>
-              <Text> testadfsdf </Text>
+              <Text> test </Text>
             </TouchableOpacity>
 
           </View>
