@@ -5,6 +5,24 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, StatusBar } from 
 import TaskItem from './task.js';
 
 export default function TodoList({ navigation }) {
+  const [tasks, settask] = useState([
+      {'name' : 'task1'},
+      {'name' : 'task2'},
+      {'name' : 'task3'},
+      {'name' : 'task4'},
+      {'name' : 'task5'},
+      {'name' : 'task6'},
+      {'name' : 'task7'},
+      {'name' : 'task8'},
+      {'name' : 'task9'},
+
+    ]);
+
+  const completetask = (index) => {
+    let itemsCopy = [...tasks];
+    itemsCopy.splice(index, 1);
+    settask(itemsCopy)
+  }
 
   const pressHandler = () => {
     navigation.navigate('Home')
@@ -22,25 +40,23 @@ export default function TodoList({ navigation }) {
       <ScrollView style={styles.scrollView}>
         <View style={styles.tasks}>
 
-          <TouchableOpacity style={styles.taskitems}>
-            <TaskItem />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.taskitems}>
-            <TaskItem />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.taskitems}>
-            <TaskItem />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.taskitems}>
-            <TaskItem />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.taskitems}>
-            <TaskItem />
-          </TouchableOpacity>
+          {
+            tasks.map((item, index) => {
+              return (
+                  <TouchableOpacity key={index}>
+                    <View style={styles.item}>
+                      <View style={styles.itemLeft}>
+                        <View style={{paddingRight: 15}}>
+                          <TouchableOpacity style={styles.dcontainer} onPress={() => completetask(index)}><View style={styles.dButton} /></TouchableOpacity>
+                        </View>
+                        <Text style={styles.taskText}>{item.name}</Text>
+                      </View>
+                      <View style={styles.circular}></View>
+                    </View>
+                  </TouchableOpacity>
+              ) 
+            })
+          }
 
         </View>
       </ScrollView>
@@ -94,5 +110,37 @@ const styles = StyleSheet.create({
   },
   taskitems: {
     paddingVertical: 0,
+  },
+  item: {
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    marginBottom: 15,
+    height: 55,
+    width: 350,
+  },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  taskText: {
+    maxWidth: '80%',
+  },
+  dButton: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    backgroundColor: "#4EA3B0"
+  },
+  dcontainer: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
+
 });
