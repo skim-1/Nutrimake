@@ -1,9 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 
-import Pillwidget from './Pillwidget';
-import Dietwidget from './Dietwidget';
-import TaskItem from './task'
+import Pillwidget from './widgets/Pillwidget';
+import Dietwidget from './widgets/Dietwidget';
+import Bojo from './widgets/bojowidget';
+import Mentwidget from './widgets/mentwidget.js';
+import Muscle from './widgets/musclewidget.js';
+import Skin from './widgets/skinwidget.js';
+import TaskItem from './task';
 
 export default function Home({navigation}) {
 
@@ -30,7 +34,31 @@ export default function Home({navigation}) {
 
           <TouchableOpacity>
             <View style={styles.taskwidget}>
+                <Mentwidget />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <View style={styles.taskwidget}>
                 <Dietwidget />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <View style={styles.taskwidget}>
+                <Bojo />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <View style={styles.taskwidget}>
+                <Skin />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <View style={styles.taskwidget}>
+                <Muscle />
             </View>
           </TouchableOpacity>
           
