@@ -1,18 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 
-import Pillwidget from './widgets/Pillwidget';
-import Dietwidget from './widgets/Dietwidget';
-import Bojo from './widgets/bojowidget';
-import Mentwidget from './widgets/mentwidget.js';
-import Muscle from './widgets/musclewidget.js';
-import Skin from './widgets/skinwidget.js';
-import TaskItem from './task';
+
 
 export default function Home({navigation}) {
 
   const HomePressHandler = () => {
     navigation.navigate('Home')
+  }
+
+  const ScanPressHandler = () => {
+    navigation.navigate('Scanner')
   }
 
   return (
@@ -24,45 +22,10 @@ export default function Home({navigation}) {
           <Text style={styles.title}>Welcome</Text>
         </View>
 
-        <View style={styles.taskContainer}>
 
-          <TouchableOpacity>
-              <View style={styles.taskwidget}>
-                <Pillwidget />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <View style={styles.taskwidget}>
-                <Mentwidget />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <View style={styles.taskwidget}>
-                <Dietwidget />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <View style={styles.taskwidget}>
-                <Bojo />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <View style={styles.taskwidget}>
-                <Skin />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <View style={styles.taskwidget}>
-                <Muscle />
-            </View>
-          </TouchableOpacity>
-          
-        </View>
+        <TouchableOpacity style={styles.taskbuttons} onPress={ScanPressHandler}>
+            <Text style={styles.btxt}>New Recipe</Text>
+        </TouchableOpacity>
 
       </ScrollView>
 
@@ -89,7 +52,8 @@ export default function Home({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    padding: 15
   },
   titleContainer: {
     paddingTop: 50,
@@ -97,13 +61,6 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 48,
-  },
-  taskContainer: {
-    alignItems: 'center',
-    paddingTop: 5,
-  },
-  taskwidget: {
-    paddingTop: 10,
   },
   scrollView: {
     marginHorizontal: 20,
@@ -119,5 +76,19 @@ const styles = StyleSheet.create({
   },
   icons: {
 
+  },
+  taskbuttons: {
+    backgroundColor: '#005470',
+    width: '100%',
+    height: 60,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  btxt: {
+    color: 'white',
+    padding: 5,
+    fontSize: 20,
+    fontWeight: 'bold',
+    paddingLeft: 15
   },
 });

@@ -2,19 +2,19 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 
 import Home from '../components/home';
-import TodoList from '../components/TodoList'
+import Scanner from '../components/scanner';
 
 const screens = {
-  TodoList: {
-    screen: TodoList,
+  Home: {
+    screen: Home,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
       }
     }
   },
-  Home: {
-    screen: Home,
+  Scanner: {
+    screen: Scanner,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
