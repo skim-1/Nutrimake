@@ -13,10 +13,13 @@ export default function Home({navigation}) {
     navigation.navigate('Scanner')
   }
 
+  const RecipePressHandler = () => {
+    navigation.navigate('Recipe')
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content"/>
-      <ScrollView style={styles.scrollView}>
 
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Welcome</Text>
@@ -27,24 +30,9 @@ export default function Home({navigation}) {
             <Text style={styles.btxt}>New Recipe</Text>
         </TouchableOpacity>
 
-      </ScrollView>
-
-      <View style={styles.footer}>
-
-        <View style={styles.TaskBar}>
-
-          <View style={styles.iconContainer}>
-
-            <TouchableOpacity styles={styles.icons} onPress={HomePressHandler}>
-              <Text> test </Text>
-            </TouchableOpacity>
-
-          </View>
-
-        </View>
-
-      </View>
-
+        <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
+            <Text style={styles.btxt}>View Current Recipe</Text>
+        </TouchableOpacity>
     </View>
   );
 }
@@ -83,6 +71,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 5,
     justifyContent: 'center',
+    marginBottom: 10,
   },
   btxt: {
     color: 'white',

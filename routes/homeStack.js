@@ -3,6 +3,7 @@ import { createAppContainer } from 'react-navigation';
 
 import Home from '../components/home';
 import Scanner from '../components/scanner';
+import Recipe from '../components/recipe';
 
 const screens = {
   Home: {
@@ -15,6 +16,14 @@ const screens = {
   },
   Scanner: {
     screen: Scanner,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  Recipe: {
+    screen: Recipe,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
