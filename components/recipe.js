@@ -1,24 +1,32 @@
 import React, {useEffect, useState} from 'react';
-import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button } from 'react-native';
 
+import FetchJson from './fetchJson'
 
 export default function Recipe({navigation}) {
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+  var data = [];
 
-  useEffect(() => {
-    fetch('https://api.nal.usda.gov/fdc/v1/foods/search?query=apple&pageSize=2&api_key=g2D1ukWeRuBExJfCviwMXBJOo9uycMRZ0UZ5JtZu')
-      .then((response) => response.json())
-      .then((json) => setData(json))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, []);
+  FetchJson('carrot').then(d => data = d);
+  const print = () => {
+      console.log(navigation.getParam('upclist'));
+  }
 
-  console.log(data.foods);
 
-  data.foods.foreach(value => {console.log(value)});
+
+
+  // data.foods.foreach(value => {console.log(value)});
 
   return (
-    <Text>asdf;aklsdfa;dslkfj</Text>
+    <View style={styles.container}>
+      <Button title={'asfdasdf'} onPress={() => print()}/>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: 45
+  },
+});

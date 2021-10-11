@@ -5,7 +5,17 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 export default function Scanner({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [codes, setCodes] = useState([]);
 
+
+  const RecipePressHandler = () => {
+    navigation.navigate('Recipe', {'upclist': codes});
+  }
+
+  const donescan = () => {
+    setScanned(false);
+    RecipePressHandler();
+  }
 
   useEffect(() => {
     (async () => {
@@ -17,7 +27,8 @@ export default function Scanner({navigation}) {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    console.log(data);
+    setCodes(dat => [...dat, data]);
+    console.log(codes);
   };
 
 
@@ -34,7 +45,7 @@ export default function Scanner({navigation}) {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+      {scanned && <Button title={'Tap to Scan Again'} onPress={() => donescan(codes)} />}
     </View>
   );
 }
