@@ -2,20 +2,14 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from 'react-navigation';
 
 import Home from '../components/home';
-import Scanner from '../components/scanner';
 import Recipe from '../components/recipe';
+import ViewQr from '../components/ViewQR';
+import ExportQR from '../components/ExportAsQR';
+
 
 const screens = {
   Home: {
     screen: Home,
-    navigationOptions: ({ navigation }) => {
-      return {
-        headerShown: false
-      }
-    }
-  },
-  Scanner: {
-    screen: Scanner,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
@@ -30,6 +24,22 @@ const screens = {
       }
     }
   },
+  ViewQr: {
+    screen: ViewQr,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  ExportQR: {
+    screen: ExportQR,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  }
 }
 
 const HomeStack = createStackNavigator(screens);

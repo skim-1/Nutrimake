@@ -9,12 +9,12 @@ export default function Home({navigation}) {
     navigation.navigate('Home')
   }
 
-  const ScanPressHandler = () => {
-    navigation.navigate('Scanner')
-  }
-
   const RecipePressHandler = () => {
     navigation.navigate('Recipe')
+  }
+
+  const QrPressHandler = () => {
+    navigation.navigate('ViewQr')
   }
 
   return (
@@ -26,12 +26,12 @@ export default function Home({navigation}) {
         </View>
 
 
-        <TouchableOpacity style={styles.taskbuttons} onPress={ScanPressHandler}>
+        <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
             <Text style={styles.btxt}>New Recipe</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
-            <Text style={styles.btxt}>View Current Recipe</Text>
+        <TouchableOpacity style={styles.taskbuttons} onPress={QrPressHandler}>
+            <Text style={styles.btxt}>Import Recipe from QR Code</Text>
         </TouchableOpacity>
     </View>
   );

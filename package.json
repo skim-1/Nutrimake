@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "axios": "^0.23.0",
     "expo": "~42.0.1",
     "expo-barcode-scanner": "~10.2.2",
     "expo-status-bar": "~1.0.4",
@@ -16,7 +17,9 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-appearance": "~0.3.3",
     "react-native-gesture-handler": "^1.10.3",
+    "react-native-qrcode-svg": "^6.1.1",
     "react-native-screens": "^3.6.0",
+    "react-native-svg": "^12.1.1",
     "react-native-web": "^0.17.1",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4"
