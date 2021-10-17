@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
 
+import { AntDesign } from '@expo/vector-icons';
+
 //chicken
 
 export default function Home({navigation}) {
@@ -27,11 +29,17 @@ export default function Home({navigation}) {
 
 
         <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
-            <Text style={styles.btxt}>New Recipe</Text>
+          <View style = {styles.itemLeft}>
+              <Text style={styles.btxt}>New Recipe</Text>
+          </View>
+          <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.taskbuttons} onPress={QrPressHandler}>
+          <View style = {styles.itemLeft}>
             <Text style={styles.btxt}>Import Recipe from QR Code</Text>
+          </View>
+          <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
         </TouchableOpacity>
     </View>
   );
@@ -40,7 +48,7 @@ export default function Home({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#dfe4eb',
     padding: 15
   },
   titleContainer: {
@@ -48,36 +56,40 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 48,
+    fontSize: 40,
   },
   scrollView: {
     marginHorizontal: 20,
   },
-  footer: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#636363',
-    paddingBottom: 45,
-    paddingLeft: 30,
+  itemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
   iconContainer: {
     paddingTop: 25
   },
-  icons: {
-
-  },
   taskbuttons: {
     backgroundColor: '#005470',
     width: '100%',
+    padding: 15,
     height: 60,
-    borderRadius: 5,
-    justifyContent: 'center',
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 20,
     marginBottom: 10,
   },
   btxt: {
     color: 'white',
     padding: 5,
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
-    paddingLeft: 15
+    maxWidth: "100%",
   },
+  arrow: {
+    width: 16,
+    height: 16,
+  }
 });

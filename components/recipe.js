@@ -5,6 +5,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import FoodItem from './FoodItem';
 import FetchJson from './fetchJson';
 import axios from 'axios';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -12,7 +13,6 @@ export default function Recipe({navigation}) {
   const [codes, setCodes] = useState([]);
   const [scanning, setScanning] = useState(false);
   var data = [];
-  const [foodItem, setFoodItem] = useState();
   const [food, setFood] = useState([]);
   const [form, setForm] = useState(false);
   const [cCode, setcurrent] = useState();
@@ -40,8 +40,7 @@ export default function Recipe({navigation}) {
         .then(d => data = d).then(d => {
           const objecct = data;
           //console.log(objecct);
-          const objeccct = JSON.stringify(objecct.data.foods[0].description);
-          setFoodItem(objeccct);
+          const objeccct = objecct.data.foods[0];
           setFood(dat => [...dat, objeccct]);
         })
     })();
@@ -58,21 +57,20 @@ export default function Recipe({navigation}) {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-      if (codes.length != 0 && codes[0].length >6) {
-        for (let i = 0; i < codes.length; i++) {
-          let cod = codes[i];
-          //console.log(cod);
-          await axios
-            .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + codee + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
-            .then(d => data = d).then(d => {
-              const objecct = data;
-              const objeccct = JSON.stringify(objecct.data.foods[0].description);
-              setFoodItem(objeccct);
-              setFood(dat => [...dat, objeccct]);
-              //console.log(food);
-            })
-        }
-      }
+      // if (codes.length != 0 && codes[0].length >6) {
+      //   for (let i = 0; i < codes.length; i++) {
+      //     let cod = codes[i];
+      //     //console.log(cod);
+      //     await axios
+      //       .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + cod + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
+      //       .then(d => data = d).then(d => {
+      //         const objecct = data;
+      //         const objeccct = objecct.data.foods[0];
+      //         setFood(dat => [...dat, objeccct]);
+      //         //console.log(food);
+      //       })
+      //   }
+      // }
     })();
   }, []);
 
@@ -102,12 +100,14 @@ export default function Recipe({navigation}) {
   }
 
   const handleFormSubmit = () => {
-    setForm(false);
-    setCodesj(dat => [...dat, {"code": cbcode, "grams": cCode}]);
-    setcurrent();
-    console.log(codes);
-    handleAddFoodItem();
-    //console.log(codes);
+    if(cCode != undefined) {
+      setForm(false);
+      setCodesj(dat => [...dat, {"code": cbcode, "grams": cCode}]);
+      setcurrent();
+      handleAddFoodItem();
+    } else {
+      alert("Please type in the amount of grams!")
+    }
   }
 
   const startScan = () => {
@@ -124,6 +124,32 @@ export default function Recipe({navigation}) {
     navigation.navigate('ExportQR', {'json': JSON.stringify(obj)});
   }
 
+  //get nutrition fact functions
+
+  const getNutrient = ( id ) => {
+    var val = 0;
+
+
+    food.map((item, index) => {
+      if( item.foodNutrients.find(x => x.nutrientId === id) !== undefined) {
+        val += item.foodNutrients.find(x => x.nutrientId === id).value * (codesj[index].grams / 100);
+      } else {
+        val += 0;
+      }
+    })
+
+    return val;
+  }
+
+  const checkempty = () => {
+    console.log(food[0])
+    if(food[0] == undefined) {
+      return(
+        <Text>Click the plus to add ingredients</Text>
+      )
+    }
+  }
+
 
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
@@ -138,7 +164,7 @@ export default function Recipe({navigation}) {
       <View style={styles.containerscan}>
 
         <TouchableOpacity style={styles.back} onPress={() => setScanning(false)}>
-          <Text style={styles.backtext}>{"< Go Back"}</Text>
+          <AntDesign name="leftcircle" size={32} color="black"/>
         </TouchableOpacity>
 
         <View style={styles.camcontainer}>
@@ -162,6 +188,8 @@ export default function Recipe({navigation}) {
         style={styles.input}
         onChangeText={setcurrent}
         value={cCode}
+        keyboardType="numeric"
+        placeholder="grams"
         />
         <Button title={"Enter"} onPress={() => handleFormSubmit()}/>
       </View>
@@ -170,50 +198,52 @@ export default function Recipe({navigation}) {
     return (
       <View style={styles.listcontainer}>
         {/* Added this scroll view to enable scrolling when list gets longer than the page */}
-        <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1
-        }}
-        >
 
-        <View style={styles.tasksWrapper}>
 
+        <Text style={styles.sectionTitle}>Nutrition Facts</Text>
+          <Text>{"Calories: " + Math.round(getNutrient( 1008 ) * 100) / 100 + " KCAL"}</Text>
+          <Text>{"Protein: " + Math.round(getNutrient( 1003 ) * 100) / 100 + " grams"}</Text>
+          <Text>{"Total Lipid (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
+          <Text>{"Carbohydrates: " + Math.round(getNutrient( 1005 ) * 100) / 100 + " grams"}</Text>
+          <Text>{"Total Sugars: " + Math.round(getNutrient( 2000 ) * 100) / 100 + " grams"}</Text>
+          <Text>{"Fiber: " + Math.round(getNutrient( 1079 ) * 100) / 100 + " grams"}</Text>
+          {/* Added this scroll view to enable scrolling when list gets longer than the page */}
           <Text style={styles.sectionTitle}>Your Ingredients</Text>
-            <View style={styles.items}>
-            {
+          <ScrollView contentContainerStyle={{flexGrow: 1}}>
 
-              food.map((item, index) => {
-                console.log(item);
-                return (
-                  <TouchableOpacity key={index}  onPress={() => completeFoodItem(index)}>
-                    <FoodItem text={item.slice(1, -1) + ", " + codesj[index].grams + " Grams"} />
-                  </TouchableOpacity>
-                )
-              })
-            }
+          <View style={styles.tasksWrapper}>
+
+              <View style={styles.items}>
+              {checkempty()}
+
+              {
+
+                food.map((item, index) => {
+                  console.log(item);
+                  return (
+                    <TouchableOpacity key={index}  onPress={() => completeFoodItem(index)}>
+                      <FoodItem text={item.slice(1, -1) + ", " + codesj[index].grams + " Grams"} />
+                    </TouchableOpacity>
+                  )
+                })
+              }
+              </View>
             </View>
-          </View>
+          </ScrollView>
 
+          <View style = {styles.addButtons}>
+            <TouchableOpacity onPress={() => startScan()}>
+              <View style={styles.addWrapperBar}>
+                <Text style={styles.addTextBar}>+</Text>
+              </View>
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => startScan()}>
-            <View style={styles.addWrapper}>
-              <Text style={styles.addText}>+</Text>
+            <TouchableOpacity onPress={() => genQR()}>
+            <View style={styles.addWrapperQR}>
+              <Text style={styles.addTextQR}>Export as QR Code</Text>
             </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => genQR()}>
-          <View style={styles.addWrapper}>
-            <Text style={styles.addText}>Export as QR Code</Text>
+            </TouchableOpacity>
           </View>
-          </TouchableOpacity>
-
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.homebutton} onPress={() => navigation.navigate('Home')}>
-            <Text>Home</Text>
-          </TouchableOpacity>
-        </View>
 
       </View>
 
@@ -262,15 +292,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15
   },
-  homebutton: {
-    width: '20%',
-    height: 60,
-    backgroundColor: 'blue',
-    alignItems: 'center',
-  },
-  footer: {
-    alignItems: 'center',
-  },
   input: {
     height: 40,
     margin: 12,
@@ -310,12 +331,67 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   back: {
-    backgroundColor: "#7a7a7a",
-    width: 85,
     marginTop: 50,
-    height: 35,
     marginLeft: 20,
     justifyContent: 'center',
     borderRadius: 5
-  }
+  },
+  addButtons: {
+    backgroundColor: '#FFF',
+    paddingLeft: 15,
+    paddingRight: 15,
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0
+  },
+  addWrapperBar: {
+    width: 45,
+    height: 45,
+    backgroundColor: '#FFF',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#C0C0C0',
+    borderWidth: 2,
+  },
+  addWrapperQR: {
+    marginTop: 5,
+    height: 47,
+    padding: 8,
+    backgroundColor: '#FFF',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#C0C0C0',
+    borderWidth: 2,
+  },
+  homebutton: {
+    width: '20%',
+    height: 35,
+    backgroundColor: '#7a7a7a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  header: {
+    paddingBottom: 5
+  },
+  addTextBar: {
+    fontSize: 30,
+    fontFamily: "Courier New",
+    fontWeight: 'bold',
+  },
+  addTextQR: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
 });
