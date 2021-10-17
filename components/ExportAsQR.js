@@ -8,13 +8,10 @@ export default function ExportQR( { navigation } ) {
 
   console.log(qrstring);
 
-  let logoFromFile = require('../assets/logo.png');
-
   return (
     <View style={styles.container}>
       <QRCode
         value={qrstring}
-        logo={logoFromFile}
       />
     </View>
   );

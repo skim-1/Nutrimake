@@ -18,13 +18,13 @@ export default function ViewQr( { navigation } ) {
     setScanned(true);
     try {
       const datajson = JSON.parse(data.replace(/(\r\n|\n|\r)/gm, ""));
-      if(datajson.simpliscan) {
-        navigation.navigate('Recipe');
-      }
+        console.log(datajson);
+        navigation.navigate('Recipe', datajson);
     } catch {
-      alert('Not a Simpliscan QR Code!');
+      console.log(69)
     } finally {
-      setScanned(false);
+      console.log('ran')
+      //setScanned(false);
     }
 
 
@@ -49,7 +49,7 @@ export default function ViewQr( { navigation } ) {
       />
 
       <View style={styles.footer}>
-        <Text style={styles.text}>Only scan simpliscan QR codes with this feature</Text>
+        <Text style={styles.text}>Only scan Nutrimake QR codes with this feature</Text>
       </View>
     </View>
   );

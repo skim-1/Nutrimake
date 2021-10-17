@@ -4,6 +4,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import FoodItem from './FoodItem';
 import FetchJson from './fetchJson';
+import axios from 'axios';
 
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -16,17 +17,32 @@ export default function Recipe({navigation}) {
   const [form, setForm] = useState(false);
   const [cCode, setcurrent] = useState();
   const [cbcode, setcurrentcode] = useState();
+  const [codesj, setCodesj] = useState([]);
 
+  if(navigation.getParam('data') !== undefined) {
+    var datajson = navigation.getParam('data');
+    var codelist = []
+    datajson.map((item, index) => {
+      codelist.push(item.code);
+    })
+    // setCodes(codelist);
+    // setCodesj(datajson);
+    console.log(codelist);
+  }
+
+  //console.log(codes);
   const handleAddFoodItem = () => {
     (async () => {
-      let codee = codes[codes.length - 1];
+      let codee = codes[codes.length-1];
+      console.log(codee);
       await axios
         .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + codee + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
         .then(d => data = d).then(d => {
           const objecct = data;
+          //console.log(objecct);
           const objeccct = JSON.stringify(objecct.data.foods[0].description);
           setFoodItem(objeccct);
-          setFood([...food, foodItem]);
+          setFood(dat => [...dat, objeccct]);
         })
     })();
   }
@@ -42,17 +58,20 @@ export default function Recipe({navigation}) {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-      for (let i = 0; i < codes.length; i++) {
-        let code = codes[i];
-        await axios
-          .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + code + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
-          .then(d => data = d).then(d => {
-            const objecct = data;
-            const objeccct = JSON.stringify(objecct.data.foods[0].description);
-            setFoodItem(objeccct);
-            food.push(objeccct);
-            console.log(food);
-          })
+      if (codes.length != 0 && codes[0].length >6) {
+        for (let i = 0; i < codes.length; i++) {
+          let cod = codes[i];
+          //console.log(cod);
+          await axios
+            .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + codee + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
+            .then(d => data = d).then(d => {
+              const objecct = data;
+              const objeccct = JSON.stringify(objecct.data.foods[0].description);
+              setFoodItem(objeccct);
+              setFood(dat => [...dat, objeccct]);
+              //console.log(food);
+            })
+        }
       }
     })();
   }, []);
@@ -67,10 +86,13 @@ export default function Recipe({navigation}) {
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    setcurrentcode(data);
+    let ddata = data;
+    ddata = ddata.substring(1);
+    setcurrentcode(ddata);
+    setCodes(dat => [...dat, ddata]);
     handleScanFinished();
-    console.log(codes);
-    handleAddFoodItem();
+    //console.log(codes);
+    //handleAddFoodItem();
   };
 
   const handleScanFinished = () => {
@@ -81,9 +103,11 @@ export default function Recipe({navigation}) {
 
   const handleFormSubmit = () => {
     setForm(false);
-    setCodes(dat => [...dat, {"code": cbcode, "grams": cCode}]);
+    setCodesj(dat => [...dat, {"code": cbcode, "grams": cCode}]);
     setcurrent();
-    console.log(codes)
+    console.log(codes);
+    handleAddFoodItem();
+    //console.log(codes);
   }
 
   const startScan = () => {
@@ -93,10 +117,10 @@ export default function Recipe({navigation}) {
 
   const genQR = () => {
     var obj = {"data": []};
-    codes.map((item, index) => {
+    codesj.map((item, index) => {
       obj['data'].push(item);
     });
-    console.log(JSON.stringify(obj));
+    //console.log(JSON.stringify(obj));
     navigation.navigate('ExportQR', {'json': JSON.stringify(obj)});
   }
 
@@ -111,11 +135,23 @@ export default function Recipe({navigation}) {
 
   if (scanning) {
     return (
-      <View style={styles.container}>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-        />
+      <View style={styles.containerscan}>
+
+        <TouchableOpacity style={styles.back} onPress={() => setScanning(false)}>
+          <Text style={styles.backtext}>{"< Go Back"}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.camcontainer}>
+
+          <Text style={styles.camtitle}>Scan a barcode</Text>
+
+          <BarCodeScanner
+            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+            style={styles.camera}
+          />
+
+          <Text style={styles.camtext}>This scanner will work better in good lighting conditions</Text>
+        </View>
       </View>
     )
   } else if(form) {
@@ -145,10 +181,12 @@ export default function Recipe({navigation}) {
           <Text style={styles.sectionTitle}>Your Ingredients</Text>
             <View style={styles.items}>
             {
+
               food.map((item, index) => {
+                console.log(item);
                 return (
                   <TouchableOpacity key={index}  onPress={() => completeFoodItem(index)}>
-                    <FoodItem text={item} />
+                    <FoodItem text={item.slice(1, -1) + ", " + codesj[index].grams + " Grams"} />
                   </TouchableOpacity>
                 )
               })
@@ -186,6 +224,15 @@ export default function Recipe({navigation}) {
 }
 
 const styles = StyleSheet.create({
+  containerscan: {
+    flex: 1,
+  },
+  camcontainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     flexDirection: 'column',
@@ -212,7 +259,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 40,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginBottom: 15
   },
   homebutton: {
     width: '20%',
@@ -229,4 +277,45 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
+  addWrapper: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#FFF',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#C0C0C0',
+    borderWidth: 1,
+  },
+  camera: {
+    height: '20%',
+    width: '80%',
+  },
+  camtitle: {
+    fontSize: 50,
+    fontWeight: 'bold',
+    marginBottom: 20
+  },
+  camtext: {
+    width: '75%',
+    textAlign: 'center',
+    color : '#7a7a7a',
+    marginTop: 15,
+    fontSize: 14,
+    marginBottom: 85
+  },
+  backtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: 'white',
+  },
+  back: {
+    backgroundColor: "#7a7a7a",
+    width: 85,
+    marginTop: 50,
+    height: 35,
+    marginLeft: 20,
+    justifyContent: 'center',
+    borderRadius: 5
+  }
 });
