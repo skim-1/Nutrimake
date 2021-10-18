@@ -18,12 +18,11 @@ export default function ViewQr( { navigation } ) {
     setScanned(true);
     try {
       const datajson = JSON.parse(data.replace(/(\r\n|\n|\r)/gm, ""));
-        console.log(datajson);
         navigation.navigate('Recipe', datajson);
     } catch {
       console.log(69)
     } finally {
-      console.log('ran')
+      //console.log('ran')
       //setScanned(false);
     }
 

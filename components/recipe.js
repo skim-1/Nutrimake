@@ -10,38 +10,43 @@ import { AntDesign } from '@expo/vector-icons';
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [codes, setCodes] = useState([]);
   const [scanning, setScanning] = useState(false);
+  const [imported, setImported] = useState(false);
   var data = [];
   const [food, setFood] = useState([]);
   const [form, setForm] = useState(false);
   const [cCode, setcurrent] = useState();
   const [cbcode, setcurrentcode] = useState();
+  const [codes, setCodes] = useState([]);
   const [codesj, setCodesj] = useState([]);
 
-  if(navigation.getParam('data') !== undefined) {
-    var datajson = navigation.getParam('data');
-    var codelist = []
-    datajson.map((item, index) => {
-      codelist.push(item.code);
-    })
-    // setCodes(codelist);
-    // setCodesj(datajson);
-    console.log(codelist);
-  }
-
+  // if(navigation.getParam('data') !== undefined) {
+  //   var datajson = navigation.getParam('data');
+  //   var codelist = []
+  //   datajson.map((item, index) => {
+  //     codelist.push(item.code);
+  //   })
+  //   const [codes, setCodes] = useState(codelist);
+  //   const [codesj, setCodesj] = useState(datajson);
+  //   //console.log(codelist);
+  // }
   //console.log(codes);
   const handleAddFoodItem = () => {
     (async () => {
       let codee = codes[codes.length-1];
-      console.log(codee);
       await axios
         .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + codee + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
         .then(d => data = d).then(d => {
           const objecct = data;
-          //console.log(objecct);
           const objeccct = objecct.data.foods[0];
-          setFood(dat => [...dat, objeccct]);
+          if(objeccct !== undefined || objecct.totalHits === 0) {
+            setFood(dat => [...dat, objeccct]);
+          } else {
+            setCodes(codes.filter((item, index) => index !== codes.length - 1));
+            setCodesj(codesj.filter((item, index) => index !== codesj.length - 1));
+            alert("Not in the database!");
+
+          }
         })
     })();
   }
@@ -57,20 +62,28 @@ export default function Recipe({navigation}) {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-      // if (codes.length != 0 && codes[0].length >6) {
-      //   for (let i = 0; i < codes.length; i++) {
-      //     let cod = codes[i];
-      //     //console.log(cod);
-      //     await axios
-      //       .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + cod + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
-      //       .then(d => data = d).then(d => {
-      //         const objecct = data;
-      //         const objeccct = objecct.data.foods[0];
-      //         setFood(dat => [...dat, objeccct]);
-      //         //console.log(food);
-      //       })
-      //   }
-      // }
+      var datajson = navigation.getParam('data');
+      if (datajson !== undefined && !imported) {
+        setImported(true);
+        let codelist = [];
+        datajson.map((item, index) => {
+          codelist.push(item.code);
+        });
+        setCodes(codelist);
+        setCodesj(datajson);
+        for (let i = 0; i < datajson.length; i++) {
+          let cod = datajson[i].code;
+          console.log(cod);
+          await axios
+            .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + cod + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
+            .then(d => data = d).then(d => {
+              const objecct = data;
+              const objeccct = objecct.data.foods[0];
+              setFood(dat => [...dat, objeccct]);
+              //console.log(food);
+            })
+        }
+      }
     })();
   }, []);
 
@@ -81,9 +94,8 @@ export default function Recipe({navigation}) {
     return data;
   }
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = ({ type, data }) => { //this runs when barcode is scanned (alert that it was scanned used to be here
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     let ddata = data;
     ddata = ddata.substring(1);
     setcurrentcode(ddata);
@@ -142,7 +154,6 @@ export default function Recipe({navigation}) {
   }
 
   const checkempty = () => {
-    console.log(food[0])
     if(food[0] == undefined) {
       return(
         <Text>Click the plus to add ingredients</Text>
@@ -200,14 +211,18 @@ export default function Recipe({navigation}) {
         {/* Added this scroll view to enable scrolling when list gets longer than the page */}
 
 
+
         <Text style={styles.sectionTitle}>Nutrition Facts</Text>
+          {/* Added this scroll view to enable scrolling when list gets longer than the page */}
+
           <Text>{"Calories: " + Math.round(getNutrient( 1008 ) * 100) / 100 + " KCAL"}</Text>
           <Text>{"Protein: " + Math.round(getNutrient( 1003 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Total Lipid (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Carbohydrates: " + Math.round(getNutrient( 1005 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Total Sugars: " + Math.round(getNutrient( 2000 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Fiber: " + Math.round(getNutrient( 1079 ) * 100) / 100 + " grams"}</Text>
-          {/* Added this scroll view to enable scrolling when list gets longer than the page */}
+
+
           <Text style={styles.sectionTitle}>Your Ingredients</Text>
           <ScrollView contentContainerStyle={{flexGrow: 1}}>
 
@@ -217,12 +232,10 @@ export default function Recipe({navigation}) {
               {checkempty()}
 
               {
-
                 food.map((item, index) => {
-                  console.log(item);
                   return (
                     <TouchableOpacity key={index}  onPress={() => completeFoodItem(index)}>
-                      <FoodItem text={item.slice(1, -1) + ", " + codesj[index].grams + " Grams"} />
+                      <FoodItem text={item.description.slice(1, -1) + ", " + codesj[index].grams + " Grams"} />
                     </TouchableOpacity>
                   )
                 })
