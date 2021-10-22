@@ -175,17 +175,25 @@ export default function Recipe({navigation}) {
       <View style={styles.containerscan}>
 
         <TouchableOpacity style={styles.back} onPress={() => setScanning(false)}>
-          <AntDesign name="leftcircle" size={32} color="black"/>
+          <Text style={styles.backtext}>{"< Go Back"}</Text>
         </TouchableOpacity>
 
-        <View style={styles.camcontainer}>
+        <Text style={styles.camtitle}>Scan a barcode</Text>
 
-          <Text style={styles.camtitle}>Scan a barcode</Text>
+        <View style={styles.container}>
 
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={styles.camera}
-          />
+            style={[StyleSheet.absoluteFill, styles.camcontainer]}
+          >
+            <View style={styles.layerTop} />
+            <View style={styles.layerCenter}>
+              <View style={styles.layerLeft} />
+              <View style={styles.focused} />
+              <View style={styles.layerRight} />
+            </View>
+            <View style={styles.layerBottom} />
+          </BarCodeScanner>
 
           <Text style={styles.camtext}>This scanner will work better in good lighting conditions</Text>
         </View>
@@ -266,6 +274,7 @@ export default function Recipe({navigation}) {
 
 }
 
+const opacity = 'rgba(0, 0, 0, .6)';
 const styles = StyleSheet.create({
   containerscan: {
     flex: 1,
@@ -273,13 +282,13 @@ const styles = StyleSheet.create({
   camcontainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginTop: 25
   },
   container: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+    alignItems: 'center'
   },
   task: {
     backgroundColor: '#005470',
@@ -290,9 +299,20 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tboxtext: {
-    color: 'white',
-    fontSize: 20,
+    color: 'black',
+    fontSize: 30,
     fontWeight: 'bold',
+  },
+  enterButton: {
+    width: '20%',
+    height: 35,
+    padding: 8,
+    backgroundColor: '#00F95F',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    fontSize: 20,
+    fontWeight: 'bold'
   },
   listcontainer: {
     paddingTop: 45,
@@ -303,51 +323,29 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 15
+    paddingBottom: 10
+  },
+  homebutton: {
+    width: '20%',
+    height: 35,
+    backgroundColor: '#00F95F',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  header: {
+    paddingBottom: 5
   },
   input: {
     height: 40,
     margin: 12,
     borderWidth: 1,
     padding: 10,
-  },
-  addWrapper: {
-    width: 60,
-    height: 60,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    justifyContent: 'center',
     alignItems: 'center',
-    borderColor: '#C0C0C0',
-    borderWidth: 1,
-  },
-  camera: {
-    height: '20%',
-    width: '80%',
-  },
-  camtitle: {
-    fontSize: 50,
-    fontWeight: 'bold',
-    marginBottom: 20
-  },
-  camtext: {
-    width: '75%',
-    textAlign: 'center',
-    color : '#7a7a7a',
-    marginTop: 15,
-    fontSize: 14,
-    marginBottom: 85
-  },
-  backtext: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: 'white',
-  },
-  back: {
-    marginTop: 50,
-    marginLeft: 20,
-    justifyContent: 'center',
-    borderRadius: 5
+    width: '50%',
+    borderRadius: 10,
   },
   addButtons: {
     backgroundColor: '#FFF',
@@ -372,10 +370,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#C0C0C0',
-    borderWidth: 2,
+    borderWidth: 1,
   },
   addWrapperQR: {
     marginTop: 5,
+    width: 90,
     height: 47,
     padding: 8,
     backgroundColor: '#FFF',
@@ -383,28 +382,69 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#C0C0C0',
-    borderWidth: 2,
-  },
-  homebutton: {
-    width: '20%',
-    height: 35,
-    backgroundColor: '#7a7a7a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
-  header: {
-    paddingBottom: 5
+    borderWidth: 1,
   },
   addTextBar: {
-    fontSize: 30,
+    fontSize: 40,
     fontFamily: "Courier New",
-    fontWeight: 'bold',
+    fontWeight: '400',
   },
   addTextQR: {
     fontSize: 12,
+    fontWeight: '500'
+  },
+  camera: {
+    height: '20%',
+    width: '80%',
+  },
+  camtitle: {
+    fontSize: 45,
     fontWeight: 'bold',
+    marginLeft: 20
+  },
+  camtext: {
+    width: '75%',
+    textAlign: 'center',
+    color : 'white',
+    marginTop: 15,
+    fontSize: 14,
+    marginBottom: 200
+  },
+  backtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: 'black',
+  },
+  back: {
+    backgroundColor: "#00F95F",
+    width: 85,
+    marginTop: 50,
+    height: 35,
+    marginLeft: 20,
+    justifyContent: 'center',
+    borderRadius: 5
+  },
+  layerTop: {
+    flex: 2,
+    backgroundColor: opacity
+  },
+  layerCenter: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  layerLeft: {
+    flex: 1,
+    backgroundColor: opacity
+  },
+  focused: {
+    flex: 10
+  },
+  layerRight: {
+    flex: 1,
+    backgroundColor: opacity
+  },
+  layerBottom: {
+    flex: 2,
+    backgroundColor: opacity
   },
 });
