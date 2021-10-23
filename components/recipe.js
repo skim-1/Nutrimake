@@ -19,6 +19,10 @@ export default function Recipe({navigation}) {
   const [cbcode, setcurrentcode] = useState();
   const [codes, setCodes] = useState([]);
   const [codesj, setCodesj] = useState([]);
+  const [editpage, setEdit] = useState(false);
+  const [cEdit, setcedit] = useState();
+  const [egrams, setegram] = useState();
+  const [etitle, setetitle] = useState();
 
   // if(navigation.getParam('data') !== undefined) {
   //   var datajson = navigation.getParam('data');
@@ -51,7 +55,7 @@ export default function Recipe({navigation}) {
     })();
   }
 
-  const completeFoodItem = (index) => {
+  const delItem = (index) => {
     let foodCopy = [...codes];
     foodCopy.splice(index, 1);
     setCodes(foodCopy)
@@ -120,6 +124,26 @@ export default function Recipe({navigation}) {
     } else {
       alert("Please type in the amount of grams!")
     }
+  }
+
+  const handleEdit = () => {
+    var editFoods = food;
+    var editcodesj = codesj;
+
+    console.log(cEdit);
+    editFoods[cEdit].description = etitle;
+    editcodesj[cEdit].grams = egrams;
+
+    setFood(editFoods);
+    setCodesj(editcodesj);
+    setEdit(false);
+  }
+
+  const handleStartEdit = (index) => {
+    setEdit(true);
+    setcedit(index);
+    setegram(codesj[index].grams)
+    setetitle(food[index].description.replace(/['"]+/g, ''));
   }
 
   const startScan = () => {
@@ -203,6 +227,8 @@ export default function Recipe({navigation}) {
     return (
       <View style={styles.container}>
         <Text style={styles.tboxtext}>How many grams?</Text>
+
+        <Text style={styles.tboxtext}>Edit</Text>
         <TextInput
         style={styles.input}
         onChangeText={setcurrent}
@@ -210,7 +236,28 @@ export default function Recipe({navigation}) {
         keyboardType="numeric"
         placeholder="grams"
         />
+
         <Button title={"Enter"} onPress={() => handleFormSubmit()}/>
+      </View>
+    )
+  } else if (editpage) {
+    return (
+      <View style={styles.container}>
+
+        <TextInput
+        style={styles.input}
+        onChangeText={setegram}
+        value={egrams}
+        keyboardType="numeric"
+        placeholder="grams"
+        />
+        <TextInput
+        style={styles.input}
+        onChangeText={setetitle}
+        value={etitle}
+        placeholder="Name"
+        />
+        <Button title={"Enter"} onPress={() => handleEdit()}/>
       </View>
     )
   } else {
@@ -242,9 +289,13 @@ export default function Recipe({navigation}) {
               {
                 food.map((item, index) => {
                   return (
-                    <TouchableOpacity key={index}  onPress={() => completeFoodItem(index)}>
-                      <FoodItem text={item.description.slice(1, -1) + ", " + codesj[index].grams + " Grams"} />
-                    </TouchableOpacity>
+                    <View key={index} style={ItemStyle.item}>
+                      <View style={ItemStyle.itemLeft}>
+                        <View style={ItemStyle.square}></View>
+                        <Text style={ItemStyle.itemText}>{item.description.replace(/['"]+/g, '') + ", " + codesj[index].grams + " Grams"}</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => handleStartEdit(index)}><AntDesign name="edit" size={24} color="black" /></TouchableOpacity>
+                    </View>
                   )
                 })
               }
@@ -446,5 +497,40 @@ const styles = StyleSheet.create({
   layerBottom: {
     flex: 2,
     backgroundColor: opacity
+  },
+});
+
+const ItemStyle = StyleSheet.create({
+  item: {
+    backgroundColor: '#FFF',
+    padding: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  square: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#55BCF6',
+    opacity: 0.4,
+    borderRadius: 5,
+    marginRight: 15,
+  },
+  itemText: {
+    maxWidth: '80%',
+  },
+  circular: {
+    width: 12,
+    height: 12,
+    borderColor: '#55BCF6',
+    borderWidth: 2,
+    borderRadius: 5,
   },
 });
