@@ -2,8 +2,6 @@ import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button, TextInput } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
-import FoodItem from './FoodItem';
-import FetchJson from './fetchJson';
 import axios from 'axios';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,17 +24,6 @@ export default function Recipe({navigation}) {
   const [etitle, setetitle] = useState();
   const [rname, setrname] = useState("Untitled");
 
-  // if(navigation.getParam('data') !== undefined) {
-  //   var datajson = navigation.getParam('data');
-  //   var codelist = []
-  //   datajson.map((item, index) => {
-  //     codelist.push(item.code);
-  //   })
-  //   const [codes, setCodes] = useState(codelist);
-  //   const [codesj, setCodesj] = useState(datajson);
-  //   //console.log(codelist);
-  // }
-  //console.log(codes);
   const handleAddFoodItem = () => {
     (async () => {
       let codee = codes[codes.length-1];
@@ -184,6 +171,8 @@ export default function Recipe({navigation}) {
       // error reading value
       console.log(e);
     }
+
+    navigation.navigate('Home', {'new': true});
   }
 
   function exportJSON() {
@@ -311,6 +300,8 @@ export default function Recipe({navigation}) {
           placeholder={"name of recipe"}
         />
 
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+
         <Text style={styles.sectionTitle}>Nutrition Facts</Text>
           {/* Added this scroll view to enable scrolling when list gets longer than the page */}
 
@@ -323,7 +314,7 @@ export default function Recipe({navigation}) {
 
 
           <Text style={styles.sectionTitle}>Your Ingredients</Text>
-          <ScrollView contentContainerStyle={{flexGrow: 1}}>
+
 
           <View style={styles.tasksWrapper}>
 
@@ -487,7 +478,6 @@ const styles = StyleSheet.create({
   },
   addTextBar: {
     fontSize: 40,
-    fontFamily: "Courier New",
     fontWeight: '400',
   },
   addTextQR: {

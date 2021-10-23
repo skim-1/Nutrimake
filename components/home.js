@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button } from 'react-native';
 
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,9 +8,52 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({navigation}) {
   const [recipes, setRecipes] = useState([]);
+  const [newuser, setnewuser] = useState(false);
+
+  const continueHandler = () => {
+    navigation.navigate('Setup');
+    setnewuser(false);
+  }
+
+  const testHandler = async() => {
+    const value = await AsyncStorage.getItem('@healthinfo');
+    const valjson = await JSON.parse(value);
+    console.log(valjson);
+  }
+
+  async function loadRecipe() {
+    try {
+      const value = await AsyncStorage.getItem('@recipes');
+
+      if(value !== null) {
+        var recipeJSON = await JSON.parse(value);
+        var recipelist = [];
+        recipeJSON.recipes.map((item, index) => {
+          recipelist.push(item);
+        })
+        setRecipes(recipelist);
+      }
+      console.log(recipelist);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   useEffect( () => {
     (async () => {
+      //for checking if stuff has happened
+      try {
+        const value = await AsyncStorage.getItem('@healthinfo');
+
+        if(value == null) {
+          setnewuser(true);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+
+
+      //for loading saved recipes
       try {
         const value = await AsyncStorage.getItem('@recipes');
 
@@ -29,6 +72,10 @@ export default function Home({navigation}) {
     })();
   }, []);
 
+  if(navigation.getParam('new') == true) {
+    loadRecipe();
+  }
+
   const HomePressHandler = () => {
     navigation.navigate('Home')
   }
@@ -41,44 +88,65 @@ export default function Home({navigation}) {
     navigation.navigate('ViewQr')
   }
 
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content"/>
+  if(newuser) {
+    return (
+      <View style={styles.welcomecontainer}>
+        <StatusBar barStyle="dark-content"/>
 
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Welcome</Text>
-        </View>
+        <Text style={styles.welcometitle}>Welcome to Simpliscan</Text>
 
-
-        <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
-          <View style = {styles.itemLeft}>
-              <Text style={styles.btxt}>New Recipe</Text>
-          </View>
-          <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
+        <TouchableOpacity style={styles.welcomebutton} onPress={() => continueHandler()}>
+          <Text style={styles.welcomeText}>Continue</Text>
         </TouchableOpacity>
+      </View>
+    )
+  } else {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="dark-content"/>
 
-        <TouchableOpacity style={styles.taskbuttons} onPress={QrPressHandler}>
-          <View style = {styles.itemLeft}>
-            <Text style={styles.btxt}>Import Recipe from QR Code</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Welcome</Text>
           </View>
-          <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
-        </TouchableOpacity>
 
-        {
-          recipes.map((item, index) => {
-            return(
-              <TouchableOpacity style={styles.taskbuttons} onPress={() => navigation.navigate('Recipe', item)} key={index}>
-                <View style = {styles.itemLeft}>
-                  <Text style={styles.btxt}>{item.name}</Text>
-                </View>
-                <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
-              </TouchableOpacity>
-            )
-          })
-        }
 
-    </View>
-  );
+          <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
+            <View style = {styles.itemLeft}>
+                <Text style={styles.btxt}>New Recipe</Text>
+            </View>
+            <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.taskbuttons} onPress={QrPressHandler}>
+            <View style = {styles.itemLeft}>
+              <Text style={styles.btxt}>Import Recipe from QR Code</Text>
+            </View>
+            <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.taskbuttons} onPress={testHandler}>
+            <View style = {styles.itemLeft}>
+              <Text style={styles.btxt}>testButton</Text>
+            </View>
+            <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
+          </TouchableOpacity>
+
+          {
+            recipes.map((item, index) => {
+              return(
+                <TouchableOpacity style={styles.taskbuttons} onPress={() => navigation.navigate('Recipe', item)} key={index}>
+                  <View style = {styles.itemLeft}>
+                    <Text style={styles.btxt}>{item.name}</Text>
+                  </View>
+                  <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
+                </TouchableOpacity>
+              )
+            })
+          }
+
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -127,5 +195,29 @@ const styles = StyleSheet.create({
   arrow: {
     width: 16,
     height: 16,
+  },
+  welcomecontainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  welcometitle: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 30,
+  },
+  welcomebutton: {
+    width: '20%',
+    marginTop: 30,
+    height: '4%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderRadius: 5,
+    borderColor: 'black',
+    borderWidth: 1,
+  },
+  welcomeText: {
+    textAlign: 'center'
   }
 });

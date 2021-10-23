@@ -5,6 +5,7 @@ import Home from '../components/home';
 import Recipe from '../components/recipe';
 import ViewQr from '../components/ViewQR';
 import ExportQR from '../components/ExportAsQR';
+import Setup from '../components/Setup';
 
 
 const screens = {
@@ -34,6 +35,14 @@ const screens = {
   },
   ExportQR: {
     screen: ExportQR,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  Setup: {
+    screen: Setup,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
