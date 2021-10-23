@@ -6,6 +6,7 @@ import FoodItem from './FoodItem';
 import FetchJson from './fetchJson';
 import axios from 'axios';
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -23,6 +24,7 @@ export default function Recipe({navigation}) {
   const [cEdit, setcedit] = useState();
   const [egrams, setegram] = useState();
   const [etitle, setetitle] = useState();
+  const [rname, setrname] = useState("Untitled");
 
   // if(navigation.getParam('data') !== undefined) {
   //   var datajson = navigation.getParam('data');
@@ -68,6 +70,7 @@ export default function Recipe({navigation}) {
       setHasPermission(status === 'granted');
       var datajson = navigation.getParam('data');
       if (datajson !== undefined && !imported) {
+        setrname(navigation.getParam('name'));
         setImported(true);
         let codelist = [];
         datajson.map((item, index) => {
@@ -151,13 +154,49 @@ export default function Recipe({navigation}) {
     setScanning(true);
   }
 
-  const genQR = () => {
-    var obj = {"data": []};
+  const saveRecipe = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@recipes');
+      if(value !== null) { //if recipes already exists (there are already saved recipes)
+        var recipelist = await JSON.parse(value);
+
+        recipelist.recipes = recipelist.recipes.filter(item => item.name !== rname);
+
+        recipelist.recipes.push(exportJSON());
+
+        try {
+          await AsyncStorage.setItem('@recipes', JSON.stringify(recipelist));
+        } catch (e) {
+          // saving error
+          console.log(e);
+        }
+      } else { //no saved recipes
+        try {
+          var jsonout = {recipes: []};
+          jsonout.recipes.push(exportJSON());
+          await AsyncStorage.setItem('@recipes', JSON.stringify(jsonout));
+        } catch (e) {
+          // saving error
+          console.log(e);
+        }
+      }
+    } catch(e) {
+      // error reading value
+      console.log(e);
+    }
+  }
+
+  function exportJSON() {
+    var obj = {"data": [], "name": rname};
     codesj.map((item, index) => {
       obj['data'].push(item);
     });
+    return obj;
+  }
+
+  const genQR = () => {
     //console.log(JSON.stringify(obj));
-    navigation.navigate('ExportQR', {'json': JSON.stringify(obj)});
+    navigation.navigate('ExportQR', {'json': JSON.stringify(exportJSON())});
   }
 
   //get nutrition fact functions
@@ -265,14 +304,19 @@ export default function Recipe({navigation}) {
       <View style={styles.listcontainer}>
         {/* Added this scroll view to enable scrolling when list gets longer than the page */}
 
-
+        <TextInput
+          style={styles.titlein}
+          onChangeText={setrname}
+          value={rname}
+          placeholder={"name of recipe"}
+        />
 
         <Text style={styles.sectionTitle}>Nutrition Facts</Text>
           {/* Added this scroll view to enable scrolling when list gets longer than the page */}
 
           <Text>{"Calories: " + Math.round(getNutrient( 1008 ) * 100) / 100 + " KCAL"}</Text>
           <Text>{"Protein: " + Math.round(getNutrient( 1003 ) * 100) / 100 + " grams"}</Text>
-          <Text>{"Total Lipid (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
+          <Text>{"Total Lipids (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Carbohydrates: " + Math.round(getNutrient( 1005 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Total Sugars: " + Math.round(getNutrient( 2000 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Fiber: " + Math.round(getNutrient( 1079 ) * 100) / 100 + " grams"}</Text>
@@ -308,6 +352,12 @@ export default function Recipe({navigation}) {
               <View style={styles.addWrapperBar}>
                 <Text style={styles.addTextBar}>+</Text>
               </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => saveRecipe()}>
+            <View style={styles.addWrapperQR}>
+              <Text style={styles.addTextQR}>Save Locally</Text>
+            </View>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => genQR()}>
@@ -498,6 +548,13 @@ const styles = StyleSheet.create({
     flex: 2,
     backgroundColor: opacity
   },
+  titlein: {
+    height: 40,
+    margin: 12,
+    padding: 10,
+    alignItems: 'center',
+    width: '50%',
+  }
 });
 
 const ItemStyle = StyleSheet.create({
