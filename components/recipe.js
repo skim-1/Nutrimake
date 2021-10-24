@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button, TextInput, KeyboardAvoidingView, Keyboard} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import axios from 'axios';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Donut from './Donut'
+import Task from './task';
 
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -26,6 +27,13 @@ export default function Recipe({navigation}) {
   const [rname, setrname] = useState("Untitled Recipe");
   var healthinfo = {age:0,weight:0,height:0}
 
+  const [recipePage, setRecipePage] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [edittimer, seteditTimer] = useState(0);
+  const [isPlaying, setIsPlaying] = useState();
+  const [recipeFood, setRecipeFood] = useState([]);
+
+  
   console.log(imported)
 
   const handleAddFoodItem = () => {
@@ -229,6 +237,11 @@ export default function Recipe({navigation}) {
 
   //get nutrition fact functions
 
+  const handleRecipePage = () => {
+    setRecipeFood(food);
+    setRecipePage(true);
+  }  
+
   const getNutrient = ( id ) => {
     var val = 0;
 
@@ -242,6 +255,21 @@ export default function Recipe({navigation}) {
     })
 
     return val;
+  }
+
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
+
+  const handleAddTask = () => {
+    Keyboard.dismiss();
+    setTaskItems([...taskItems, task])
+    setTask(null);
+  }
+
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    itemsCopy.splice(index, 1);
+    setTaskItems(itemsCopy)
   }
 
   const checkempty = () => {
@@ -262,8 +290,60 @@ export default function Recipe({navigation}) {
     return <Text>No access to camera</Text>;
   }
 
-
-  if (scanning) {
+  if (recipePage) {
+    return (
+      <View style={recipestyles.container}>
+        {/* Added this scroll view to enable scrolling when list gets longer than the page */}
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1
+          }}
+          keyboardShouldPersistTaps='handled'
+        >
+        <View style={{flexDirection: 'row', marginTop: 50, marginBottom: -75, marginLeft: 20}}>
+            <TouchableOpacity style={styles.backRecipe} onPress={() => setRecipePage(false)}>
+              <Text style={styles.backtext}>{"< Go Back"}</Text>
+            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>Recipe List</Text>
+        </View>
+  
+        {/* Today's Tasks */}
+        <View style={recipestyles.tasksWrapper}>
+          <Text style={recipestyles.sectionTitle}>Today's tasks</Text>
+          <View style={recipestyles.items}>
+            {/* This is where the tasks will go! */}
+            {
+              taskItems.map((item, index) => {
+                return (
+                  <TouchableOpacity key={index}  onPress={() => completeTask(index)}>
+                    <Task text={item} /> 
+                  </TouchableOpacity>
+                )
+              })
+            }
+          </View>
+        </View>
+          
+        </ScrollView>
+  
+        {/* Write a task */}
+        {/* Uses a keyboard avoiding view which ensures the keyboard does not cover the items on screen */}
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={recipestyles.writeTaskWrapper}
+        >
+          <TextInput style={recipestyles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
+          <TouchableOpacity onPress={() => handleAddTask()}>
+            <View style={recipestyles.addWrapper}>
+              <Text style={recipestyles.addText}>+</Text>
+            </View>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+        
+      </View>
+    );
+  }
+  else if (scanning) {
     return (
       <View style={styles.containerscan}>
 
@@ -346,6 +426,11 @@ export default function Recipe({navigation}) {
           borderRadius: 10,
           flexGrow: 1,
         }}>
+          <TouchableOpacity onPress={() => handleRecipePage()}>
+            <View style={styles.addWrapperQR}>
+              <Text style={styles.addTextQR}>Recipe Page</Text>
+            </View>
+          </TouchableOpacity>
           <ScrollView >
 
           <Text style={styles.sectionTitle}>Nutrition Facts</Text>
@@ -564,6 +649,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 5
   },
+  backRecipe: {
+    backgroundColor: "#00F95F",
+    width: 85,
+    height: 35,
+    marginLeft: 0,
+    marginRight: 15,
+    justifyContent: 'center',
+    borderRadius: 5,
+  },
   layerTop: {
     flex: 2,
     backgroundColor: opacity
@@ -604,7 +698,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
-
   },
 });
 
@@ -641,4 +734,50 @@ const ItemStyle = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 5,
   },
+});
+
+const recipestyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#E8EAED',
+  },
+  tasksWrapper: {
+    paddingTop: 80,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold'
+  },
+  items: {
+    marginTop: 30,
+  },
+  writeTaskWrapper: {
+    position: 'absolute',
+    bottom: 60,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  input: {
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    backgroundColor: '#FFF',
+    borderRadius: 60,
+    borderColor: '#C0C0C0',
+    borderWidth: 1,
+    width: 250,
+  },
+  addWrapper: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#FFF',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#C0C0C0',
+    borderWidth: 1,
+  },
+  addText: {},
 });
