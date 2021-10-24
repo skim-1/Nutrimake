@@ -28,13 +28,9 @@ export default function Recipe({navigation}) {
   var healthinfo = {age:0,weight:0,height:0}
 
   const [recipePage, setRecipePage] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [edittimer, seteditTimer] = useState(0);
-  const [isPlaying, setIsPlaying] = useState();
-  const [recipeFood, setRecipeFood] = useState([]);
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
 
-  
-  console.log(imported)
 
   const handleAddFoodItem = () => {
     (async () => {
@@ -105,9 +101,9 @@ export default function Recipe({navigation}) {
       }
 
       var datajson = navigation.getParam('data');
-      console.log(datajson);
       if (datajson !== undefined && !imported) {
         setrname(navigation.getParam('name'));
+        setTaskItems(navigation.getParam('recipe'));
         setImported(true);
         let codelist = [];
         datajson.map((item, index) => {
@@ -117,7 +113,6 @@ export default function Recipe({navigation}) {
         setCodesj(datajson);
         for (let i = 0; i < datajson.length; i++) {
           let cod = datajson[i].code;
-          console.log(cod);
           await axios
             .get('https://api.nal.usda.gov/fdc/v1/foods/search?query=' + cod + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1')
             .then(d => data = d).then(d => {
@@ -163,7 +158,6 @@ export default function Recipe({navigation}) {
     var editFoods = food;
     var editcodesj = codesj;
 
-    console.log(cEdit);
     editFoods[cEdit].description = etitle;
     editcodesj[cEdit].grams = egrams;
 
@@ -223,7 +217,8 @@ export default function Recipe({navigation}) {
   }
 
   function exportJSON() {
-    var obj = {"data": [], "name": rname};
+    console.log(taskItems);
+    var obj = {"data": [], "name": rname, "recipe": taskItems};
     codesj.map((item, index) => {
       obj['data'].push(item);
     });
@@ -238,9 +233,8 @@ export default function Recipe({navigation}) {
   //get nutrition fact functions
 
   const handleRecipePage = () => {
-    setRecipeFood(food);
     setRecipePage(true);
-  }  
+  }
 
   const getNutrient = ( id ) => {
     var val = 0;
@@ -256,9 +250,6 @@ export default function Recipe({navigation}) {
 
     return val;
   }
-
-  const [task, setTask] = useState();
-  const [taskItems, setTaskItems] = useState([]);
 
   const handleAddTask = () => {
     Keyboard.dismiss();
@@ -300,13 +291,13 @@ export default function Recipe({navigation}) {
           }}
           keyboardShouldPersistTaps='handled'
         >
-        <View style={{flexDirection: 'row', marginTop: 50, marginBottom: -75, marginLeft: 20}}>
+        <View style={{flexDirection: 'row', marginTop: 50, marginLeft: 20}}>
             <TouchableOpacity style={styles.backRecipe} onPress={() => setRecipePage(false)}>
               <Text style={styles.backtext}>{"< Go Back"}</Text>
             </TouchableOpacity>
             <Text style={styles.sectionTitle}>Recipe List</Text>
         </View>
-  
+
         {/* Today's Tasks */}
         <View style={recipestyles.tasksWrapper}>
           <Text style={recipestyles.sectionTitle}>Today's tasks</Text>
@@ -316,19 +307,19 @@ export default function Recipe({navigation}) {
               taskItems.map((item, index) => {
                 return (
                   <TouchableOpacity key={index}  onPress={() => completeTask(index)}>
-                    <Task text={item} /> 
+                    <Task text={item} />
                   </TouchableOpacity>
                 )
               })
             }
           </View>
         </View>
-          
+
         </ScrollView>
-  
+
         {/* Write a task */}
         {/* Uses a keyboard avoiding view which ensures the keyboard does not cover the items on screen */}
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={recipestyles.writeTaskWrapper}
         >
@@ -339,7 +330,7 @@ export default function Recipe({navigation}) {
             </View>
           </TouchableOpacity>
         </KeyboardAvoidingView>
-        
+
       </View>
     );
   }
@@ -426,11 +417,7 @@ export default function Recipe({navigation}) {
           borderRadius: 10,
           flexGrow: 1,
         }}>
-          <TouchableOpacity onPress={() => handleRecipePage()}>
-            <View style={styles.addWrapperQR}>
-              <Text style={styles.addTextQR}>Recipe Page</Text>
-            </View>
-          </TouchableOpacity>
+
           <ScrollView >
 
           <Text style={styles.sectionTitle}>Nutrition Facts</Text>
@@ -475,6 +462,13 @@ export default function Recipe({navigation}) {
                   })
                 }
                 </View>
+
+                <TouchableOpacity onPress={() => handleRecipePage()}>
+                  <View style={styles.addWrapperQR}>
+                    <Text style={styles.addTextQR}>Recipe Page</Text>
+                  </View>
+                </TouchableOpacity>
+
               </View>
             </ScrollView>
 

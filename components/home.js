@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Home({navigation}) {
   const [recipes, setRecipes] = useState([]);
   const [newuser, setnewuser] = useState(false);
+  const [reciepesloaded, setloaded] = useState(false);
 
   const continueHandler = () => {
     navigation.navigate('Setup');
@@ -19,13 +20,14 @@ export default function Home({navigation}) {
     try {
       const value = await AsyncStorage.getItem('@recipes');
 
-      if(value !== null) {
+      if(value !== null && !reciepesloaded) {
         var recipeJSON = await JSON.parse(value);
         var recipelist = [];
         recipeJSON.recipes.map((item, index) => {
           recipelist.push(item);
         })
         setRecipes(recipelist);
+        setloaded(true);
       }
       console.log(recipelist);
     } catch (e) {
@@ -127,7 +129,7 @@ export default function Home({navigation}) {
             <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.taskbuttons} onPress={() => navigation.navigate('Search')}> 
+          <TouchableOpacity style={styles.taskbuttons} onPress={() => AsyncStorage.clear()}>
             <View style = {styles.itemLeft}>
               <Text style={styles.btxt}>Test</Text>
             </View>
