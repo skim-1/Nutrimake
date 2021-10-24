@@ -5,6 +5,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios from 'axios';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Donut from './Donut'
 
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -23,6 +24,7 @@ export default function Recipe({navigation}) {
   const [egrams, setegram] = useState();
   const [etitle, setetitle] = useState();
   const [rname, setrname] = useState("Untitled");
+  var healthinfo = {age:0,weight:0,height:0}
 
   const handleAddFoodItem = () => {
     (async () => {
@@ -44,6 +46,31 @@ export default function Recipe({navigation}) {
     })();
   }
 
+  function getColor(value){
+    if(value * 3 > 1) {
+      value = 1;
+    } else {
+      value = value * 3;
+    }
+    return 'rgb('+Math.round(155 * value)+','+ Math.round(155-(155 * value)) + ',0)'
+  }
+
+  const calcCals = () => {
+    if (gender) {
+      maxCals = 10*healthinfo.weight + 6.25*healthinfo.height - 5*healthinfo.age - 161;
+    }
+    else {
+      maxCals = 10*healthinfo.weight + 6.25*healthinfo.height - 5*healthinfo.age + 5;
+    }
+  }
+  let maxCals = 2450;
+
+  const piedata = [{
+    percentage: 500,
+    color: 'tomato',
+    max: maxCals
+  },]
+
   const delItem = (index) => {
     let foodCopy = [...codes];
     foodCopy.splice(index, 1);
@@ -55,6 +82,17 @@ export default function Recipe({navigation}) {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
+
+      try {
+        var infojson = JSON.parse(await AsyncStorage.getItem('@healthinfo'));
+        healthinfo.age = parseInt(infojson.age);
+        healthinfo.weight = parseInt(infojson.weight);
+        healthinfo.height = parseInt(infojson.height);
+      } catch (e) {
+        console.log('this part not working');
+        console.log(e);
+      }
+
       var datajson = navigation.getParam('data');
       if (datajson !== undefined && !imported) {
         setrname(navigation.getParam('name'));
@@ -305,6 +343,14 @@ export default function Recipe({navigation}) {
         <Text style={styles.sectionTitle}>Nutrition Facts</Text>
           {/* Added this scroll view to enable scrolling when list gets longer than the page */}
 
+          <View style={{flexDirection: 'row', justifyContent: 'space-evenly', flexWrap: 'wrap', alignItems: 'center'}}>
+            <Donut
+              percentage={Math.round(getNutrient( 1008 ) * 100) / 100}
+              color={'green'}
+              delay={500}
+              max={maxCals}/>
+          </View>
+
           <Text>{"Calories: " + Math.round(getNutrient( 1008 ) * 100) / 100 + " KCAL"}</Text>
           <Text>{"Protein: " + Math.round(getNutrient( 1003 ) * 100) / 100 + " grams"}</Text>
           <Text>{"Total Lipids (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
@@ -544,7 +590,19 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     width: '50%',
-  }
+  },
+  infoGraphs: {
+    backgroundColor: '#FFF',
+    paddingLeft: 15,
+    paddingRight: 15,
+    padding: 10,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+
+  },
 });
 
 const ItemStyle = StyleSheet.create({
