@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import axios from 'axios';
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Donut from './Donut'
 
@@ -23,8 +23,10 @@ export default function Recipe({navigation}) {
   const [cEdit, setcedit] = useState();
   const [egrams, setegram] = useState();
   const [etitle, setetitle] = useState();
-  const [rname, setrname] = useState("Untitled");
+  const [rname, setrname] = useState("Untitled Recipe");
   var healthinfo = {age:0,weight:0,height:0}
+
+  console.log(imported)
 
   const handleAddFoodItem = () => {
     (async () => {
@@ -47,12 +49,13 @@ export default function Recipe({navigation}) {
   }
 
   function getColor(value){
-    if(value * 3 > 1) {
-      value = 1;
+    if(value > .35) {
+      return 'red';
+    } else if(value > .28) {
+      return '#e8f000';
     } else {
-      value = value * 3;
+      return 'green';
     }
-    return 'rgb('+Math.round(155 * value)+','+ Math.round(155-(155 * value)) + ',0)'
   }
 
   const calcCals = () => {
@@ -74,7 +77,7 @@ export default function Recipe({navigation}) {
   const delItem = (index) => {
     let foodCopy = [...codes];
     foodCopy.splice(index, 1);
-    setCodes(foodCopy)
+    setCodes(foodCopy);
   }
 
 
@@ -94,6 +97,7 @@ export default function Recipe({navigation}) {
       }
 
       var datajson = navigation.getParam('data');
+      console.log(datajson);
       if (datajson !== undefined && !imported) {
         setrname(navigation.getParam('name'));
         setImported(true);
@@ -118,13 +122,6 @@ export default function Recipe({navigation}) {
       }
     })();
   }, []);
-
-  async function FetchJson(bcode) {
-    const api_url = 'https://api.nal.usda.gov/fdc/v1/foods/search?query=' + bcode + '&pageSize=2&api_key=HG9UBjDgOgF9lbCdLLLJwo5jUBMQUg9RDBADsRf1';
-    const response = await fetch(api_url);
-    const data = await response.json();
-    return data;
-  }
 
   const handleBarCodeScanned = ({ type, data }) => { //this runs when barcode is scanned (alert that it was scanned used to be here
     setScanned(true);
@@ -213,6 +210,10 @@ export default function Recipe({navigation}) {
     navigation.navigate('Home', {'new': true});
   }
 
+  const searchStart = () => {
+    navigation.navigate('Search', {data: exportJSON()})
+  }
+
   function exportJSON() {
     var obj = {"data": [], "name": rname};
     codesj.map((item, index) => {
@@ -246,7 +247,9 @@ export default function Recipe({navigation}) {
   const checkempty = () => {
     if(food[0] == undefined) {
       return(
-        <Text>Click the plus to add ingredients</Text>
+        <Text style={{
+          color: '#787878'
+        }}>Click the plus to add ingredients</Text>
       )
     }
   }
@@ -337,73 +340,86 @@ export default function Recipe({navigation}) {
           value={rname}
           placeholder={"name of recipe"}
         />
+        <View style={{
+          backgroundColor: 'white',
+          padding: 15,
+          borderRadius: 10,
+          flexGrow: 1,
+        }}>
+          <ScrollView >
 
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
+          <Text style={styles.sectionTitle}>Nutrition Facts</Text>
+            {/* Added this scroll view to enable scrolling when list gets longer than the page */}
 
-        <Text style={styles.sectionTitle}>Nutrition Facts</Text>
-          {/* Added this scroll view to enable scrolling when list gets longer than the page */}
+            <View style={styles.infoGraphs}>
+              <View>
+                <Text>{"Protein: " + Math.round(getNutrient( 1003 ) * 100) / 100 + " grams"}</Text>
+                <Text>{"Total Lipids (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
+                <Text>{"Carbohydrates: " + Math.round(getNutrient( 1005 ) * 100) / 100 + " grams"}</Text>
+                <Text>{"Total Sugars: " + Math.round(getNutrient( 2000 ) * 100) / 100 + " grams"}</Text>
+                <Text>{"Fiber: " + Math.round(getNutrient( 1079 ) * 100) / 100 + " grams"}</Text>
+              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'space-evenly', flexWrap: 'wrap', alignItems: 'center'}}>
+                <Donut
+                  percentage={Math.round(getNutrient( 1008 ) * 100) / 100}
+                  color={getColor((Math.round(getNutrient( 1008 ) * 100) / 100)/maxCals)}
+                  delay={500}
+                  max={maxCals}/>
+              </View>
+            </View>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-evenly', flexWrap: 'wrap', alignItems: 'center'}}>
-            <Donut
-              percentage={Math.round(getNutrient( 1008 ) * 100) / 100}
-              color={'green'}
-              delay={500}
-              max={maxCals}/>
-          </View>
-
-          <Text>{"Calories: " + Math.round(getNutrient( 1008 ) * 100) / 100 + " KCAL"}</Text>
-          <Text>{"Protein: " + Math.round(getNutrient( 1003 ) * 100) / 100 + " grams"}</Text>
-          <Text>{"Total Lipids (fat): " + Math.round(getNutrient( 1004 ) * 100) / 100 + " grams"}</Text>
-          <Text>{"Carbohydrates: " + Math.round(getNutrient( 1005 ) * 100) / 100 + " grams"}</Text>
-          <Text>{"Total Sugars: " + Math.round(getNutrient( 2000 ) * 100) / 100 + " grams"}</Text>
-          <Text>{"Fiber: " + Math.round(getNutrient( 1079 ) * 100) / 100 + " grams"}</Text>
-
-
-          <Text style={styles.sectionTitle}>Your Ingredients</Text>
+            <Text style={styles.sectionTitle}>Your Ingredients</Text>
 
 
-          <View style={styles.tasksWrapper}>
+            <View style={styles.tasksWrapper}>
 
-              <View style={styles.items}>
-              {checkempty()}
+                <View style={styles.items}>
+                {checkempty()}
 
-              {
-                food.map((item, index) => {
-                  return (
-                    <View key={index} style={ItemStyle.item}>
-                      <View style={ItemStyle.itemLeft}>
-                        <View style={ItemStyle.square}></View>
-                        <Text style={ItemStyle.itemText}>{item.description.replace(/['"]+/g, '') + ", " + codesj[index].grams + " Grams"}</Text>
+                {
+                  food.map((item, index) => {
+                    return (
+                      <View key={index} style={ItemStyle.item}>
+                        <View style={ItemStyle.itemLeft}>
+                          <View style={ItemStyle.square}></View>
+                          <Text style={ItemStyle.itemText}>{item.description.replace(/['"]+/g, '') + ", " + codesj[index].grams + " Grams"}</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => handleStartEdit(index)}><AntDesign name="edit" size={24} color="black" /></TouchableOpacity>
                       </View>
-                      <TouchableOpacity onPress={() => handleStartEdit(index)}><AntDesign name="edit" size={24} color="black" /></TouchableOpacity>
-                    </View>
-                  )
-                })
-              }
+                    )
+                  })
+                }
+                </View>
               </View>
-            </View>
-          </ScrollView>
+            </ScrollView>
 
-          <View style = {styles.addButtons}>
-            <TouchableOpacity onPress={() => startScan()}>
-              <View style={styles.addWrapperBar}>
-                <Text style={styles.addTextBar}>+</Text>
-              </View>
-            </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => saveRecipe()}>
-            <View style={styles.addWrapperQR}>
-              <Text style={styles.addTextQR}>Save Locally</Text>
-            </View>
-            </TouchableOpacity>
+            <View style = {styles.addButtons}>
+              <TouchableOpacity onPress={() => startScan()}>
+                <View style={styles.addWrapperBar}>
+                  <Feather name="plus" size={30} style={{marginLeft:1}} color="black" />
+                </View>
+              </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => genQR()}>
-            <View style={styles.addWrapperQR}>
-              <Text style={styles.addTextQR}>Export as QR Code</Text>
+              <TouchableOpacity onPress={() => searchStart()}>
+                <View style={styles.addWrapperBar}>
+                  <Text style={styles.addTextQR}>Add Manually</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => saveRecipe()}>
+                <View style={styles.addWrapperQR}>
+                  <Text style={styles.addTextQR}>Save Locally</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => genQR()}>
+                <View style={styles.addWrapperQR}>
+                  <Text style={styles.addTextQR}>Export as QR Code</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-            </TouchableOpacity>
           </View>
-
       </View>
 
     )
@@ -428,14 +444,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  task: {
-    backgroundColor: '#005470',
-    width: '100%',
-    height: 60,
-    borderRadius: 5,
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
   tboxtext: {
     color: 'black',
     fontSize: 30,
@@ -459,7 +467,7 @@ const styles = StyleSheet.create({
     height: '92%'
   },
   sectionTitle: {
-    fontSize: 40,
+    fontSize: 30,
     fontWeight: 'bold',
     paddingBottom: 10
   },
@@ -473,9 +481,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  header: {
-    paddingBottom: 5
-  },
   input: {
     height: 40,
     margin: 12,
@@ -486,7 +491,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   addButtons: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#F2F2F2',
     paddingLeft: 15,
     paddingRight: 15,
     padding: 10,
@@ -494,7 +499,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    margin: 10,
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -503,7 +508,6 @@ const styles = StyleSheet.create({
   addWrapperBar: {
     width: 45,
     height: 45,
-    backgroundColor: '#FFF',
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
@@ -511,16 +515,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   addWrapperQR: {
-    marginTop: 5,
-    width: 90,
     height: 47,
-    padding: 8,
-    backgroundColor: '#FFF',
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     borderColor: '#C0C0C0',
     borderWidth: 1,
+    paddingLeft: 15,
+    paddingRight: 15
   },
   addTextBar: {
     fontSize: 40,
@@ -528,7 +530,8 @@ const styles = StyleSheet.create({
   },
   addTextQR: {
     fontSize: 12,
-    fontWeight: '500'
+    fontWeight: '500',
+    textAlign: 'center'
   },
   camera: {
     height: '20%',
@@ -585,14 +588,14 @@ const styles = StyleSheet.create({
     backgroundColor: opacity
   },
   titlein: {
-    height: 40,
-    margin: 12,
-    padding: 10,
-    alignItems: 'center',
-    width: '50%',
+    fontSize: 40,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    padding: 5,
+    paddingLeft: 15,
   },
   infoGraphs: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#F2F2F2',
     paddingLeft: 15,
     paddingRight: 15,
     padding: 10,

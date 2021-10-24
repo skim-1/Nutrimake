@@ -15,12 +15,6 @@ export default function Home({navigation}) {
     setnewuser(false);
   }
 
-  const testHandler = async() => {
-    const value = await AsyncStorage.getItem('@healthinfo');
-    const valjson = await JSON.parse(value);
-    console.log(valjson);
-  }
-
   async function loadRecipe() {
     try {
       const value = await AsyncStorage.getItem('@recipes');
@@ -65,7 +59,6 @@ export default function Home({navigation}) {
           })
           setRecipes(recipelist);
         }
-        console.log(recipelist);
       } catch (e) {
         console.log(e);
       }
@@ -86,6 +79,16 @@ export default function Home({navigation}) {
 
   const QrPressHandler = () => {
     navigation.navigate('ViewQr')
+  }
+
+  function checkrecipes() {
+    if(recipes.length == 0) {
+      return (
+        <Text style={{color: '#787878', paddingTop: 5}}>{
+          'no saved recipes'
+        }</Text>
+      )
+    }
   }
 
   if(newuser) {
@@ -124,12 +127,17 @@ export default function Home({navigation}) {
             <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.taskbuttons} onPress={testHandler}>
+          <TouchableOpacity style={styles.taskbuttons} onPress={() => navigation.navigate('Search')}> 
             <View style = {styles.itemLeft}>
-              <Text style={styles.btxt}>testButton</Text>
+              <Text style={styles.btxt}>Test</Text>
             </View>
             <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
           </TouchableOpacity>
+
+          <Text style={styles.sectiontitle}>Stored Recipes:</Text>
+
+          <ScrollView>
+          {checkrecipes()}
 
           {
             recipes.map((item, index) => {
@@ -144,6 +152,8 @@ export default function Home({navigation}) {
             })
           }
 
+          </ScrollView>
+
       </View>
     );
   }
@@ -152,7 +162,6 @@ export default function Home({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#dfe4eb',
     padding: 15
   },
   titleContainer: {
@@ -219,5 +228,10 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     textAlign: 'center'
+  },
+  sectiontitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    paddingTop: 15
   }
 });

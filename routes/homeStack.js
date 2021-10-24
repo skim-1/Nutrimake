@@ -6,11 +6,20 @@ import Recipe from '../components/recipe';
 import ViewQr from '../components/ViewQR';
 import ExportQR from '../components/ExportAsQR';
 import Setup from '../components/Setup';
+import Search from '../components/Search';
 
 
 const screens = {
   Home: {
     screen: Home,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  Search: {
+    screen: Search,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
