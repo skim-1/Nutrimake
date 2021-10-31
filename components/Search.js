@@ -27,6 +27,7 @@ export default function Search( { navigation } ) {
       var toOut = navigation.getParam('data');
       toOut.data.push({"code": ccode, "grams": cgram});
       console.log(toOut);
+      setform(false);
       navigation.push('Recipe', toOut);
     } else {
       alert("Please type in the amount of grams!")
@@ -46,9 +47,8 @@ export default function Search( { navigation } ) {
   if(form) {
     return (
       <View style={styles.container}>
-        <Text style={styles.tboxtext}>How many grams?</Text>
+        <Text style={styles.tboxtext}>Mass in Grams of Ingredient</Text>
 
-        <Text style={styles.tboxtext}>Edit</Text>
         <TextInput
         style={styles.input}
         onChangeText={setcurrent}
@@ -56,9 +56,22 @@ export default function Search( { navigation } ) {
         keyboardType="numeric"
         placeholder="grams"
         />
-
-        <Button title={"Enter"} onPress={() => handleFormSubmit()}/>
-      </View>
+        <TouchableOpacity onPress={() => handleFormSubmit()}>
+            <View style={{height: 47,
+                          borderRadius: 60,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderColor: '#C0C0C0',
+                          borderWidth: 1,
+                          paddingLeft: 15,
+                          paddingRight: 15,
+                          width: 300,
+                          marginTop: 20
+                          }}>
+            <Text style={styles.addTextQR}>Finish</Text>
+          </View>
+        </TouchableOpacity>
+    </View>
     )
   } else {
     return (
@@ -68,10 +81,10 @@ export default function Search( { navigation } ) {
       <View style={{
         flexDirection: 'row',
         justifyContent: 'center',
-        paddingTop: 30
+        paddingTop: 15
       }}>
 
-      <Text style={{fontSize:16,padding:8}}>Search: </Text>
+      <Text style={{fontSize:16,paddingTop:22}}>Search: </Text>
 
       <TextInput
         style={styles.input}
@@ -105,18 +118,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  tboxtext: {
+    color: 'black',
+    maxWidth: '80%',
+    fontSize: 40,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
   header: {
     marginTop: 80,
     fontSize: 40,
     fontWeight: 'bold'
   },
   input: {
+    height: 40,
+    margin: 12,
     borderWidth: 1,
-    borderColor: 'black',
-    padding: 8,
-    borderRadius: 5,
-    width: '60%',
-    marginBottom: 30
+    padding: 10,
+    alignItems: 'center',
+    width: '50%',
+    borderRadius: 10,
   },
   searchterm: {
     width: '100%',

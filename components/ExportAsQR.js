@@ -7,17 +7,28 @@ export default function ExportQR( { navigation } ) {
   let qrstring = navigation.getParam('json');
 
   console.log(qrstring);
-
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Scan this QR code with the Simpliscan App to open your recipe</Text>
+      <Text style={styles.text}>Scan this QR code with the Nutrimake App to open your recipe</Text>
 
       <QRCode
         value={qrstring}
       />
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-        <Text style={styles.butText}>Go Back</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+            <View style={{height: 47,
+                          borderRadius: 60,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderColor: '#C0C0C0',
+                          borderWidth: 1,
+                          paddingLeft: 15,
+                          paddingRight: 15,
+                          width: 300,
+                          marginTop: 50
+                          }}>
+              <Text style={styles.addTextQR}>Back to Ingredient List</Text>
+            </View>
       </TouchableOpacity>
     </View>
   );

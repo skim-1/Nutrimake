@@ -7,6 +7,8 @@ import ViewQr from '../components/ViewQR';
 import ExportQR from '../components/ExportAsQR';
 import Setup from '../components/Setup';
 import Search from '../components/Search';
+import Cloudrecipes from '../components/Cloudrecipes';
+import QuickScan from '../components/QuickScan';
 
 
 const screens = {
@@ -52,6 +54,22 @@ const screens = {
   },
   Setup: {
     screen: Setup,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  Cloudrecipes: {
+    screen: Cloudrecipes,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  QuickScan: {
+    screen: QuickScan,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false

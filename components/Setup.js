@@ -27,46 +27,63 @@ export default function Setup( { navigation } ) {
 
       <View style={styles.inputswrap}>
         <View style={styles.inputwrapper}>
-        <Text style={styles.titles}>Age:</Text>
+          <Text style={styles.titles}>Age:</Text>
 
-        <TextInput
-        style={styles.input}
-        onChangeText={setage}
-        value={age}
-        keyboardType="numeric"
-        placeholder="age"
-        />
+          <TextInput
+          style={styles.input}
+          onChangeText={setage}
+          value={age}
+          keyboardType="numeric"
+          placeholder="age"
+          returnKeyType={'done'}
+          />
         </View>
 
 
         <View style={styles.inputwrapper}>
-        <Text style={styles.titles}>Weight:</Text>
+          <Text style={styles.titles}>Weight:</Text>
 
-        <TextInput
-        style={styles.input}
-        onChangeText={setweight}
-        value={weight}
-        keyboardType="numeric"
-        placeholder="lbs"
-        />
-        </View>
+          <TextInput
+          style={styles.input}
+          onChangeText={setweight}
+          value={weight}
+          keyboardType="numeric"
+          placeholder="lbs"
+          returnKeyType={'done'}
+          />
+          </View>
 
         <View style={styles.inputwrapper}>
-        <Text style={styles.titles}>Height:</Text>
 
-        <TextInput
-        style={styles.input}
-        onChangeText={setheight}
-        value={height}
-        keyboardType="numeric"
-        placeholder="in"
-        />
+          <Text style={styles.titles}>Height:</Text>
+
+          <TextInput
+          style={styles.input}
+          onChangeText={setheight}
+          value={height}
+          keyboardType="numeric"
+          placeholder="in"
+          returnKeyType={'done'}
+          />
         </View>
+
       </View>
 
-      <TouchableOpacity style={styles.confirmbutton} onPress={() => confirmHandler()}>
-        <Text style={styles.conText}>Continue</Text>
-      </TouchableOpacity>
+      <TouchableOpacity onPress={() => confirmHandler()}>
+            <View style={{height: 47,
+                          borderRadius: 60,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderColor: 'black',
+                          borderWidth: 1,
+                          paddingLeft: 15,
+                          paddingRight: 15,
+                          width: 300,
+                          marginTop: 20,
+                          }}>
+              <Text style={styles.conText}>Continue</Text>
+            </View>
+          </TouchableOpacity>
 
     </View>
   );
@@ -76,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
+    marginTop: 100,
     alignItems: 'center',
   },
   header: {
@@ -85,6 +102,8 @@ const styles = StyleSheet.create({
   },
   inputwrapper: {
     flexDirection: 'row',
+    marginBottom: 10,
+    marginTop: 10
   },
   confirmbutton: {
     width: '20%',
@@ -100,18 +119,23 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   inputswrap: {
-    alignItems: 'flex-start'
+    alignItems: 'flex-end'
   },
   titles: {
     textAlign: 'left',
-    marginRight: 10
+    marginRight: 10,
+    marginTop: 9,
+    marginBottom: 15,
+    fontSize: 13,
   },
   input: {
-    width: '20%',
+    width: 80,
+    maxWidth: 80,
     borderWidth: 1,
     borderColor: 'black',
     paddingLeft: 5,
     paddingRight: 5,
-    borderRadius: 5
+    borderRadius: 5,
+    height: 35,
   }
 });

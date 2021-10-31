@@ -6,7 +6,6 @@ import axios from 'axios';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Donut from './Donut'
-import Task from './task';
 
 export default function Recipe({navigation}) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -24,8 +23,10 @@ export default function Recipe({navigation}) {
   const [cEdit, setcedit] = useState();
   const [egrams, setegram] = useState();
   const [etitle, setetitle] = useState();
-  const [rname, setrname] = useState("Untitled Recipe");
+  const [rname, setrname] = useState();
   var healthinfo = {age:0,weight:0,height:0}
+
+  const [maxCals, setcals] = useState(2450);
 
   const [recipePage, setRecipePage] = useState(false);
   const [task, setTask] = useState();
@@ -62,16 +63,6 @@ export default function Recipe({navigation}) {
     }
   }
 
-  const calcCals = () => {
-    if (gender) {
-      maxCals = 10*healthinfo.weight + 6.25*healthinfo.height - 5*healthinfo.age - 161;
-    }
-    else {
-      maxCals = 10*healthinfo.weight + 6.25*healthinfo.height - 5*healthinfo.age + 5;
-    }
-  }
-  let maxCals = 2450;
-
   const piedata = [{
     percentage: 500,
     color: 'tomato',
@@ -95,6 +86,8 @@ export default function Recipe({navigation}) {
         healthinfo.age = parseInt(infojson.age);
         healthinfo.weight = parseInt(infojson.weight);
         healthinfo.height = parseInt(infojson.height);
+
+        setcals(2450);
       } catch (e) {
         console.log('this part not working');
         console.log(e);
@@ -257,6 +250,13 @@ export default function Recipe({navigation}) {
     setTask(null);
   }
 
+  const uploadrecipe = async () => {
+    await axios.post('https://nutriserver.azurewebsites.net/upload', exportJSON())
+      .then(function (response) {
+        console.log(response);
+      })
+  }
+
   const completeTask = (index) => {
     let itemsCopy = [...taskItems];
     itemsCopy.splice(index, 1);
@@ -268,9 +268,39 @@ export default function Recipe({navigation}) {
       return(
         <Text style={{
           color: '#787878'
-        }}>Click the plus to add ingredients</Text>
+        }}>Click the plus to scan and add ingredients</Text>
       )
     }
+  }
+
+  const deleteItem = () => {
+    console.log(cEdit);
+    setCodes(codes.filter((item, index) => index !== cEdit));
+    setFood(food.filter((item, index) => index !== cEdit));
+    setCodesj(codesj.filter((item, index) => index !== cEdit));
+    setEdit(false);
+  }
+
+  const checkemptyrecipelist = () => {
+    if(food[0] == undefined) {
+      return(
+        <Text style={{
+          color: '#787878'
+        }}>You have nothing scanned!</Text>
+      )
+    }
+  }
+  const Task = (props) => {
+
+    return (
+      <View style={recipeliststyles.item}>
+        <View style={recipeliststyles.itemLeft}>
+          <View style={ItemStyle.square}></View>
+          <Text style={recipeliststyles.itemText}>{props.text}</Text>
+        </View>
+
+      </View>
+    )
   }
 
 
@@ -285,22 +315,38 @@ export default function Recipe({navigation}) {
     return (
       <View style={recipestyles.container}>
         {/* Added this scroll view to enable scrolling when list gets longer than the page */}
+        <View style={{flexDirection: 'row', marginTop: 40, padding: 10, alignSelf: 'center'}}>
+          <TouchableOpacity style={{height: 47,
+                                borderRadius: 60,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                borderColor: '#C0C0C0',
+                                borderWidth: 1,
+                                paddingLeft: 15,
+                                paddingRight: 15,
+                                width: 330,
+                                marginTop: 1,
+                                backgroundColor: 'white'
+                                }} onPress={() => setRecipePage(false)}>
+            <Text style={styles.backtext}>{"Back to Ingredient List"}</Text>
+          </TouchableOpacity>
+
+        </View>
+
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1
           }}
           keyboardShouldPersistTaps='handled'
         >
-        <View style={{flexDirection: 'row', marginTop: 50, marginLeft: 20}}>
-            <TouchableOpacity style={styles.backRecipe} onPress={() => setRecipePage(false)}>
-              <Text style={styles.backtext}>{"< Go Back"}</Text>
-            </TouchableOpacity>
-            <Text style={styles.sectionTitle}>Recipe List</Text>
+        <View style={{flexDirection: 'row', marginTop: 5, marginLeft: 20}}>
+            <Text style={{fontSize: 24,
+                          fontWeight: 'bold',
+                          marginBottom: -20}}>Instructions</Text>
         </View>
 
         {/* Today's Tasks */}
         <View style={recipestyles.tasksWrapper}>
-          <Text style={recipestyles.sectionTitle}>Today's tasks</Text>
           <View style={recipestyles.items}>
             {/* This is where the tasks will go! */}
             {
@@ -323,10 +369,19 @@ export default function Recipe({navigation}) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={recipestyles.writeTaskWrapper}
         >
-          <TextInput style={recipestyles.input} placeholder={'Write a task'} value={task} onChangeText={text => setTask(text)} />
+          <TextInput style={recipestyles.input} placeholder={'Write Instructions'} value={task} onChangeText={text => setTask(text)} />
           <TouchableOpacity onPress={() => handleAddTask()}>
-            <View style={recipestyles.addWrapper}>
-              <Text style={recipestyles.addText}>+</Text>
+            <View style={{
+                          width: 45,
+                          height: 45,
+                          borderRadius: 60,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderColor: '#C0C0C0',
+                          borderWidth: 1,
+                          marginLeft: -30
+                        }}>
+              <Feather name="plus" size={30} style={{marginLeft:1}} color="black" />
             </View>
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -338,11 +393,23 @@ export default function Recipe({navigation}) {
     return (
       <View style={styles.containerscan}>
 
-        <TouchableOpacity style={styles.back} onPress={() => setScanning(false)}>
-          <Text style={styles.backtext}>{"< Go Back"}</Text>
-        </TouchableOpacity>
+        <View style = {styles.rowContatiner}>
+          <TouchableOpacity style={{height: 47,
+                                borderRadius: 60,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                borderColor: '#C0C0C0',
+                                borderWidth: 1,
+                                paddingLeft: 15,
+                                paddingRight: 15,
+                                width: 330,
+                                marginTop: 40,
+                                marginBottom: -16}} onPress={() => setScanning(false)}>
+            <Text style={styles.backtext}>{"Back to Ingredient List"}</Text>
+          </TouchableOpacity>
+        </View>
 
-        <Text style={styles.camtitle}>Scan a barcode</Text>
+        <View></View>
 
         <View style={styles.container}>
 
@@ -361,14 +428,30 @@ export default function Recipe({navigation}) {
 
           <Text style={styles.camtext}>This scanner will work better in good lighting conditions</Text>
         </View>
+
+        <View style = {styles.rowContatiner}>
+          <TouchableOpacity style={{height: 47,
+                                borderRadius: 60,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                borderColor: '#C0C0C0',
+                                borderWidth: 1,
+                                paddingLeft: 15,
+                                paddingRight: 15,
+                                width: 330,
+                                marginTop: 8,
+                                marginBottom: 20}} onPress={() => searchStart()}>
+            <Text style={styles.backtext}>{"Add Manually"}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
     )
   } else if(form) {
     return (
       <View style={styles.container}>
-        <Text style={styles.tboxtext}>How many grams?</Text>
+        <Text style={styles.tboxtext}>Mass in Grams of Ingredient</Text>
 
-        <Text style={styles.tboxtext}>Edit</Text>
         <TextInput
         style={styles.input}
         onChangeText={setcurrent}
@@ -376,14 +459,28 @@ export default function Recipe({navigation}) {
         keyboardType="numeric"
         placeholder="grams"
         />
-
-        <Button title={"Enter"} onPress={() => handleFormSubmit()}/>
+        <TouchableOpacity onPress={() => handleFormSubmit()}>
+            <View style={{height: 47,
+                          borderRadius: 60,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderColor: '#C0C0C0',
+                          borderWidth: 1,
+                          paddingLeft: 15,
+                          paddingRight: 15,
+                          width: 300,
+                          marginTop: 20
+                          }}>
+              <Text style={styles.addTextQR}>Finish</Text>
+            </View>
+          </TouchableOpacity>
       </View>
     )
   } else if (editpage) {
     return (
       <View style={styles.container}>
-
+        <Text style = {{fontWeight: 'bold', fontSize: 40, marginBottom: 10}}>Edit</Text>
+        <Text style = {{fontWeight: 'bold', fontSize: 20}}>Mass of Ingredient:</Text>
         <TextInput
         style={styles.input}
         onChangeText={setegram}
@@ -391,13 +488,33 @@ export default function Recipe({navigation}) {
         keyboardType="numeric"
         placeholder="grams"
         />
+        <Text style = {{fontWeight: 'bold', fontSize: 20}}>Ingredient Description:</Text>
         <TextInput
         style={styles.input}
         onChangeText={setetitle}
         value={etitle}
         placeholder="Name"
         />
-        <Button title={"Enter"} onPress={() => handleEdit()}/>
+        <View style = {{alignItems: 'center'}}>
+          <TouchableOpacity onPress={() => handleEdit()}>
+            <View style={{height: 47,
+                          borderRadius: 60,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          borderColor: '#C0C0C0',
+                          borderWidth: 1,
+                          paddingLeft: 15,
+                          paddingRight: 15,
+                          width: 300,
+                          marginTop: 20
+                          }}>
+              <Text style={styles.addTextQR}>Finish Edits</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => deleteItem()}><AntDesign name="delete" size={24} color="black" /></TouchableOpacity>
+
+        </View>
       </View>
     )
   } else {
@@ -409,7 +526,7 @@ export default function Recipe({navigation}) {
           style={styles.titlein}
           onChangeText={setrname}
           value={rname}
-          placeholder={"name of recipe"}
+          placeholder={"Untitled Recipe"}
         />
         <View style={{
           backgroundColor: 'white',
@@ -418,6 +535,7 @@ export default function Recipe({navigation}) {
           flexGrow: 1,
         }}>
 
+        <View style = {{height: '80%', maxHeight: '80%'}}>
           <ScrollView >
 
           <Text style={styles.sectionTitle}>Nutrition Facts</Text>
@@ -463,15 +581,27 @@ export default function Recipe({navigation}) {
                 }
                 </View>
 
+              </View>
+            </ScrollView>
+          </View>
+            <View style = {{alignItems: 'center'}}>
+
                 <TouchableOpacity onPress={() => handleRecipePage()}>
-                  <View style={styles.addWrapperQR}>
-                    <Text style={styles.addTextQR}>Recipe Page</Text>
+                  <View style={{height: 47,
+                                borderRadius: 60,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                borderColor: '#C0C0C0',
+                                borderWidth: 1,
+                                paddingLeft: 15,
+                                paddingRight: 15,
+                                width: 330,
+                                }}>
+                    <Text style={styles.addTextQR}>Instructions</Text>
                   </View>
                 </TouchableOpacity>
 
-              </View>
-            </ScrollView>
-
+            </View>
 
             <View style = {styles.addButtons}>
               <TouchableOpacity onPress={() => startScan()}>
@@ -480,21 +610,21 @@ export default function Recipe({navigation}) {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => searchStart()}>
-                <View style={styles.addWrapperBar}>
-                  <Text style={styles.addTextQR}>Add Manually</Text>
+              <TouchableOpacity onPress={() => saveRecipe()}>
+                <View style={styles.addWrapperQR}>
+                  <Text style={styles.addTextQR}>Save</Text>
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => saveRecipe()}>
-                <View style={styles.addWrapperQR}>
-                  <Text style={styles.addTextQR}>Save Locally</Text>
-                </View>
-              </TouchableOpacity>
+              <TouchableOpacity onPress={() => uploadrecipe()}>
+                  <View style={styles.addWrapperQR}>
+                    <Text style={styles.addTextQR}>Upload to MRKT</Text>
+                  </View>
+                </TouchableOpacity>
 
               <TouchableOpacity onPress={() => genQR()}>
                 <View style={styles.addWrapperQR}>
-                  <Text style={styles.addTextQR}>Export as QR Code</Text>
+                  <Text style={styles.addTextQR}>Share as QR Code</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -523,10 +653,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  rowContatiner: {
+    flexDirection: 'row',
+    alignSelf: 'center'
+  },
   tboxtext: {
     color: 'black',
-    fontSize: 30,
+    maxWidth: '80%',
+    fontSize: 40,
     fontWeight: 'bold',
+    textAlign: 'center'
   },
   enterButton: {
     width: '20%',
@@ -543,7 +679,8 @@ const styles = StyleSheet.create({
     paddingTop: 45,
     marginHorizontal: 15,
     marginTop: 15,
-    height: '92%'
+    height: '92%',
+    maxHeight: '92%'
   },
   sectionTitle: {
     fontSize: 30,
@@ -582,7 +719,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
-    right: 0
+    right: 0,
   },
   addWrapperBar: {
     width: 45,
@@ -601,7 +738,8 @@ const styles = StyleSheet.create({
     borderColor: '#C0C0C0',
     borderWidth: 1,
     paddingLeft: 15,
-    paddingRight: 15
+    paddingRight: 15,
+    maxWidth: 100
   },
   addTextBar: {
     fontSize: 40,
@@ -617,9 +755,10 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   camtitle: {
-    fontSize: 45,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginLeft: 20
+    marginBottom: -20,
+    textAlign: 'center'
   },
   camtext: {
     width: '75%',
@@ -635,13 +774,25 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   back: {
-    backgroundColor: "#00F95F",
+    backgroundColor: "white",
     width: 85,
     marginTop: 50,
+    borderWidth: 1,
     height: 35,
-    marginLeft: 20,
+    marginLeft: 8,
     justifyContent: 'center',
-    borderRadius: 5
+    borderRadius: 5,
+  },
+  addManually: {
+    backgroundColor: "white",
+    borderWidth: 1,
+    width: 95,
+    marginTop: 50,
+    height: 35,
+    marginLeft: '23%',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginRight: 8,
   },
   backRecipe: {
     backgroundColor: "#00F95F",
@@ -711,22 +862,17 @@ const ItemStyle = StyleSheet.create({
     flexWrap: 'wrap'
   },
   square: {
-    width: 24,
-    height: 24,
-    backgroundColor: '#55BCF6',
-    opacity: 0.4,
+    width: 20,
+    height: 20,
+    backgroundColor: '#00F95F',
+    borderWidth: 2,
+    borderColor: 'black',
+    opacity: 0.8,
     borderRadius: 5,
     marginRight: 15,
   },
   itemText: {
     maxWidth: '80%',
-  },
-  circular: {
-    width: 12,
-    height: 12,
-    borderColor: '#55BCF6',
-    borderWidth: 2,
-    borderRadius: 5,
   },
 });
 
@@ -736,7 +882,6 @@ const recipestyles = StyleSheet.create({
     backgroundColor: '#E8EAED',
   },
   tasksWrapper: {
-    paddingTop: 80,
     paddingHorizontal: 20,
   },
   sectionTitle: {
@@ -758,10 +903,10 @@ const recipestyles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     backgroundColor: '#FFF',
-    borderRadius: 60,
+    borderRadius: 8,
     borderColor: '#C0C0C0',
     borderWidth: 1,
-    width: 250,
+    width: '75%',
   },
   addWrapper: {
     width: 60,
@@ -774,4 +919,32 @@ const recipestyles = StyleSheet.create({
     borderWidth: 1,
   },
   addText: {},
+});
+
+const recipeliststyles = StyleSheet.create({
+  item: {
+    backgroundColor: '#FFF',
+    padding: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  square: {
+    width: 24,
+    height: 24,
+    backgroundColor: '#55BCF6',
+    opacity: 0.4,
+    borderRadius: 5,
+    marginRight: 15,
+  },
+  itemText: {
+    maxWidth: '80%',
+  },
 });

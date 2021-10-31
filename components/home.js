@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, ScrollView, StatusBar, TouchableOpacity, Button
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//chicken
 
 export default function Home({navigation}) {
   const [recipes, setRecipes] = useState([]);
@@ -37,7 +36,6 @@ export default function Home({navigation}) {
 
   useEffect( () => {
     (async () => {
-      //for checking if stuff has happened
       try {
         const value = await AsyncStorage.getItem('@healthinfo');
 
@@ -83,10 +81,18 @@ export default function Home({navigation}) {
     navigation.navigate('ViewQr')
   }
 
+  const QuickScanHandler = () => {
+    navigation.navigate('QuickScan')
+  }
+
+  const CloudrecipesHandler = () => {
+    navigation.navigate('Cloudrecipes')
+  }
+
   function checkrecipes() {
     if(recipes.length == 0) {
       return (
-        <Text style={{color: '#787878', paddingTop: 5}}>{
+        <Text style={{color: '#787878', paddingTop: 5, marginLeft: 8}}>{
           'no saved recipes'
         }</Text>
       )
@@ -98,7 +104,7 @@ export default function Home({navigation}) {
       <View style={styles.welcomecontainer}>
         <StatusBar barStyle="dark-content"/>
 
-        <Text style={styles.welcometitle}>Welcome to Simpliscan</Text>
+        <Text style={styles.welcometitle}>Welcome to Nutrimake</Text>
 
         <TouchableOpacity style={styles.welcomebutton} onPress={() => continueHandler()}>
           <Text style={styles.welcomeText}>Continue</Text>
@@ -111,30 +117,44 @@ export default function Home({navigation}) {
         <StatusBar barStyle="dark-content"/>
 
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Welcome</Text>
+            <Text style={styles.title}>Home</Text>
           </View>
 
+          <View style={styles.itemContainerRowOne}>
+            <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
+              <View style = {styles.itemLeft}>
+                  <Text style={styles.btxt}>New Recipe</Text>
+              </View>
+              <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.taskbuttons} onPress={RecipePressHandler}>
-            <View style = {styles.itemLeft}>
-                <Text style={styles.btxt}>New Recipe</Text>
-            </View>
-            <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.taskbuttons} onPress={QrPressHandler}>
-            <View style = {styles.itemLeft}>
-              <Text style={styles.btxt}>Import Recipe from QR Code</Text>
-            </View>
-            <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.taskbuttons} onPress={() => AsyncStorage.clear()}>
-            <View style = {styles.itemLeft}>
-              <Text style={styles.btxt}>Test</Text>
-            </View>
-            <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.taskbuttons} onPress={QrPressHandler}>
+              <View style = {styles.itemLeft}>
+                <Text style={styles.btxt}>Import Recipe from QR Code</Text>
+              </View>
+              <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.itemContainerRowOne}>
+            <TouchableOpacity style={styles.taskbuttons} onPress={() => CloudrecipesHandler()}>
+              <View style = {styles.itemLeft}>
+                <Text style={styles.btxt}>Recipe MRKT</Text>
+              </View>
+              <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
+            </TouchableOpacity>
+
+
+
+            <TouchableOpacity style={styles.taskbuttons} onPress={() => QuickScanHandler()}>
+              <View style = {styles.itemLeft}>
+                <Text style={styles.btxt}>Nutrients    Quick Scan</Text>
+              </View>
+              <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
+            </TouchableOpacity>
+          </View>
 
           <Text style={styles.sectiontitle}>Stored Recipes:</Text>
 
@@ -144,11 +164,11 @@ export default function Home({navigation}) {
           {
             recipes.map((item, index) => {
               return(
-                <TouchableOpacity style={styles.taskbuttons} onPress={() => navigation.navigate('Recipe', item)} key={index}>
-                  <View style = {styles.itemLeft}>
-                    <Text style={styles.btxt}>{item.name}</Text>
+                <TouchableOpacity style={styles.recipeButtons} onPress={() => navigation.navigate('Recipe', item)} key={index}>
+                  <View style = {styles.itemLeftRecipes}>
+                    <Text style={styles.btxtRecipes}>{item.name}</Text>
                   </View>
-                  <View style = {styles.arrow}><AntDesign name="right" size={16} color="white"/></View>
+                  <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
                 </TouchableOpacity>
               )
             })
@@ -162,12 +182,38 @@ export default function Home({navigation}) {
 }
 
 const styles = StyleSheet.create({
+  itemLeftRecipes: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  recipeButtons: {
+    backgroundColor: '#00F95F',
+    width: '95%',
+    padding: 15,
+    height: 60,
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: 'center',
+    justifyContent: "space-between",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  btxtRecipes: {
+    color: 'black',
+    padding: 5,
+    fontSize: 16,
+    fontWeight: 'bold',
+    maxWidth: "100%",
+  },
   container: {
     flex: 1,
     padding: 15
   },
   titleContainer: {
     paddingTop: 50,
+    marginLeft: 8
   },
   title: {
     fontWeight: 'bold',
@@ -184,20 +230,32 @@ const styles = StyleSheet.create({
   iconContainer: {
     paddingTop: 25
   },
+  itemContainerRowOne: {
+    flexDirection: "row",
+    maxWidth: "100%",
+    alignItems: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    justifyContent: 'space-evenly'
+  },
   taskbuttons: {
-    backgroundColor: '#005470',
-    width: '100%',
+    backgroundColor: '#00F95F',
+    width: '45%',
     padding: 15,
-    height: 60,
+    height: 120,
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 20,
-    marginBottom: 10,
+    justifyContent: "space-evenly",
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 5,
+    marginRight: 5
   },
   btxt: {
-    color: 'white',
+    color: 'black',
     padding: 5,
     fontSize: 16,
     fontWeight: 'bold',
@@ -219,21 +277,23 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   welcomebutton: {
-    width: '20%',
+    width: '30%',
     marginTop: 30,
-    height: '4%',
+    height: '6%',
     justifyContent: 'center',
     alignContent: 'center',
     borderRadius: 5,
     borderColor: 'black',
-    borderWidth: 1,
+    borderWidth: 1
   },
   welcomeText: {
-    textAlign: 'center'
+    textAlign: 'center',
+    fontSize: 18
   },
   sectiontitle: {
     fontSize: 30,
     fontWeight: 'bold',
-    paddingTop: 15
+    paddingTop: 15,
+    marginLeft: 8
   }
 });
