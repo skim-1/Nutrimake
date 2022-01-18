@@ -9,6 +9,8 @@ import Setup from '../components/Setup';
 import Search from '../components/Search';
 import Cloudrecipes from '../components/Cloudrecipes';
 import QuickScan from '../components/QuickScan';
+import Pantry from '../components/Pantry';
+import Ilist from '../components/Ilist';
 
 
 const screens = {
@@ -70,6 +72,22 @@ const screens = {
   },
   QuickScan: {
     screen: QuickScan,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  Pantry: {
+    screen: Pantry,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  Ilist: {
+    screen: Ilist,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false

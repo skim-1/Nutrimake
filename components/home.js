@@ -89,6 +89,10 @@ export default function Home({navigation}) {
     navigation.navigate('Cloudrecipes')
   }
 
+  const PantryHandler = () => {
+    navigation.navigate('Pantry')
+  }
+
   function checkrecipes() {
     if(recipes.length == 0) {
       return (
@@ -141,16 +145,16 @@ export default function Home({navigation}) {
           <View style={styles.itemContainerRowOne}>
             <TouchableOpacity style={styles.taskbuttons} onPress={() => CloudrecipesHandler()}>
               <View style = {styles.itemLeft}>
-                <Text style={styles.btxt}>Recipe MRKT</Text>
+                <Text style={styles.btxt}>Browse      Recipes</Text>
               </View>
               <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
             </TouchableOpacity>
 
 
 
-            <TouchableOpacity style={styles.taskbuttons} onPress={() => QuickScanHandler()}>
+            <TouchableOpacity style={styles.taskbuttons} onPress={() => PantryHandler()}>
               <View style = {styles.itemLeft}>
-                <Text style={styles.btxt}>Nutrients    Quick Scan</Text>
+                <Text style={styles.btxt}>My Pantry</Text>
               </View>
               <View style = {styles.arrow}><AntDesign name="right" size={16} color="black"/></View>
             </TouchableOpacity>
@@ -188,7 +192,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   recipeButtons: {
-    backgroundColor: '#00F95F',
+    backgroundColor: '#00de54',
     width: '95%',
     padding: 15,
     height: 60,
@@ -241,7 +245,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly'
   },
   taskbuttons: {
-    backgroundColor: '#00F95F',
+    backgroundColor: '#00de54',
     width: '45%',
     padding: 15,
     height: 120,
