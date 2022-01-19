@@ -171,42 +171,8 @@ export default function Ilist({navigation}) {
     setScanning(true);
   }
 
-  const saveRecipe = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@recipes');
-      if(value !== null) { //if recipes already exists (there are already saved recipes)
-        var recipelist = await JSON.parse(value);
-
-        recipelist.recipes = recipelist.recipes.filter(item => item.name !== rname);
-
-        recipelist.recipes.push(exportJSON());
-
-        try {
-          await AsyncStorage.setItem('@recipes', JSON.stringify(recipelist));
-        } catch (e) {
-          // saving error
-          console.log(e);
-        }
-      } else { //no saved recipes
-        try {
-          var jsonout = {recipes: []};
-          jsonout.recipes.push(exportJSON());
-          await AsyncStorage.setItem('@recipes', JSON.stringify(jsonout));
-        } catch (e) {
-          // saving error
-          console.log(e);
-        }
-      }
-    } catch(e) {
-      // error reading value
-      console.log(e);
-    }
-
-    navigation.navigate('Home', {'new': true});
-  }
-
   const searchStart = () => {
-    navigation.navigate('Search', {data: exportJSON()})
+    navigation.navigate('PSearch', {data: exportJSON()})
   }
 
   function exportJSON() {
@@ -216,11 +182,6 @@ export default function Ilist({navigation}) {
       obj['data'].push(item);
     });
     return obj;
-  }
-
-  const genQR = () => {
-    //console.log(JSON.stringify(obj));
-    navigation.navigate('ExportQR', {'json': JSON.stringify(exportJSON())});
   }
 
   //get nutrition fact functions
@@ -290,6 +251,12 @@ export default function Ilist({navigation}) {
       )
     }
   }
+
+  const goBack = () => {
+    AsyncStorage.setItem('@ingredients', JSON.stringify(exportJSON().data);
+    navigation.navigate('Pantry');
+  }
+
   const Task = (props) => {
 
     return (
@@ -524,6 +491,10 @@ export default function Ilist({navigation}) {
           borderRadius: 10,
           flexGrow: 1,
         }}>
+
+        <TouchableOpacity style={styles.backButt} onPress={() => goBack()}>
+          Done
+        </TouchableOpacity>
 
         <View style = {{height: '80%', maxHeight: '80%'}}>
           <ScrollView >

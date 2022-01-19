@@ -16,8 +16,10 @@ export default function Pantry( { navigation } ) {
   useEffect( () => {
     (async () => {
       var object = {}
+
+      object = JSON.parse(AsyncStorage.getItem('@ingredients'));
       await axios
-        .post('http://nutriserver.azurewebsites.net/search', )
+        .post('http://nutriserver.azurewebsites.net/search', object)
         .then(d => setRecipes(d.data.recipes))
     })();
   }, [rendert])

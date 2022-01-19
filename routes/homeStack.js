@@ -11,6 +11,7 @@ import Cloudrecipes from '../components/Cloudrecipes';
 import QuickScan from '../components/QuickScan';
 import Pantry from '../components/Pantry';
 import Ilist from '../components/Ilist';
+import PSearch from '../components/PSearch';
 
 
 const screens = {
@@ -88,6 +89,14 @@ const screens = {
   },
   Ilist: {
     screen: Ilist,
+    navigationOptions: ({ navigation }) => {
+      return {
+        headerShown: false
+      }
+    }
+  },
+  PSearch: {
+    screen: PSearch,
     navigationOptions: ({ navigation }) => {
       return {
         headerShown: false
