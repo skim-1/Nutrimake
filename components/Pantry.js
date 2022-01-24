@@ -15,12 +15,15 @@ export default function Pantry( { navigation } ) {
 
   useEffect( () => {
     (async () => {
-      var object = {}
+      var object = JSON.parse(await AsyncStorage.getItem('@ingredients'))
+      console.log(object);
+      // console.log(JSON.parse(object));
+      var dat = await {data: object};
+      if(object !== null) {
+        await axios.post('https://nutriserver.azurewebsites.net/search', dat)
+          .then(d => setRecipes(d.data.recipes))
+      }
 
-      object = JSON.parse(AsyncStorage.getItem('@ingredients'));
-      await axios
-        .post('http://nutriserver.azurewebsites.net/search', object)
-        .then(d => setRecipes(d.data.recipes))
     })();
   }, [rendert])
 

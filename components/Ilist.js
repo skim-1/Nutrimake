@@ -93,7 +93,9 @@ export default function Ilist({navigation}) {
         console.log(e);
       }
 
-      var datajson = navigation.getParam('data');
+      var datajson = JSON.parse(await AsyncStorage.getItem('@ingredients'));
+      // var datajson = navigation.getParam('data');
+      console.log(datajson);
       if (datajson !== undefined && !imported) {
         setrname(navigation.getParam('name'));
         setTaskItems(navigation.getParam('recipe'));
@@ -253,7 +255,7 @@ export default function Ilist({navigation}) {
   }
 
   const goBack = () => {
-    AsyncStorage.setItem('@ingredients', JSON.stringify(exportJSON().data);
+    AsyncStorage.setItem('@ingredients', JSON.stringify(exportJSON().data));
     navigation.navigate('Pantry');
   }
 
@@ -265,17 +267,16 @@ export default function Ilist({navigation}) {
           <View style={ItemStyle.square}></View>
           <Text style={recipeliststyles.itemText}>{props.text}</Text>
         </View>
-
       </View>
     )
   }
 
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return <Text>{'Requesting for camera permission'}</Text>;
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text>{'No access to camera'}</Text>;
   }
 
   if (recipePage) {
@@ -309,7 +310,7 @@ export default function Ilist({navigation}) {
         <View style={{flexDirection: 'row', marginTop: 5, marginLeft: 20}}>
             <Text style={{fontSize: 24,
                           fontWeight: 'bold',
-                          marginBottom: -20}}>Instructions</Text>
+                          marginBottom: -20}}>{'Instructions'}</Text>
         </View>
 
         <View style={recipestyles.tasksWrapper}>
@@ -348,14 +349,12 @@ export default function Ilist({navigation}) {
             </View>
           </TouchableOpacity>
         </KeyboardAvoidingView>
-
       </View>
     );
   }
   else if (scanning) {
     return (
       <View style={styles.containerscan}>
-
         <View style = {styles.rowContatiner}>
           <TouchableOpacity style={{height: 47,
                                 borderRadius: 60,
@@ -372,8 +371,6 @@ export default function Ilist({navigation}) {
           </TouchableOpacity>
         </View>
 
-        <View></View>
-
         <View style={styles.container}>
 
           <BarCodeScanner
@@ -389,7 +386,7 @@ export default function Ilist({navigation}) {
             <View style={styles.layerBottom} />
           </BarCodeScanner>
 
-          <Text style={styles.camtext}>This scanner will work better in good lighting conditions</Text>
+          <Text style={styles.camtext}>{'This scanner will work better in good lighting conditions'}</Text>
         </View>
 
         <View style = {styles.rowContatiner}>
@@ -413,7 +410,7 @@ export default function Ilist({navigation}) {
   } else if(form) {
     return (
       <View style={styles.container}>
-        <Text style={styles.tboxtext}>Mass in Grams of Ingredient</Text>
+        <Text style={styles.tboxtext}>{"Mass in Grams of Ingredient"}</Text>
 
         <TextInput
         style={styles.input}
@@ -434,7 +431,7 @@ export default function Ilist({navigation}) {
                           width: 300,
                           marginTop: 20
                           }}>
-              <Text style={styles.addTextQR}>Finish</Text>
+              <Text style={styles.addTextQR}>{"Finish"}</Text>
             </View>
           </TouchableOpacity>
       </View>
@@ -442,8 +439,8 @@ export default function Ilist({navigation}) {
   } else if (editpage) {
     return (
       <View style={styles.container}>
-        <Text style = {{fontWeight: 'bold', fontSize: 40, marginBottom: 10}}>Edit</Text>
-        <Text style = {{fontWeight: 'bold', fontSize: 20}}>Mass of Ingredient:</Text>
+        <Text style = {{fontWeight: 'bold', fontSize: 40, marginBottom: 10}}>{"Edit"}</Text>
+        <Text style = {{fontWeight: 'bold', fontSize: 20}}>{"Mass of Ingredient:"}</Text>
         <TextInput
         style={styles.input}
         onChangeText={setegram}
@@ -451,7 +448,7 @@ export default function Ilist({navigation}) {
         keyboardType="numeric"
         placeholder="grams"
         />
-        <Text style = {{fontWeight: 'bold', fontSize: 20}}>Ingredient Description:</Text>
+        <Text style = {{fontWeight: 'bold', fontSize: 20}}>{"Ingredient Description:"}</Text>
         <TextInput
         style={styles.input}
         onChangeText={setetitle}
@@ -471,7 +468,7 @@ export default function Ilist({navigation}) {
                           width: 300,
                           marginTop: 20
                           }}>
-              <Text style={styles.addTextQR}>Finish Edits</Text>
+              <Text style={styles.addTextQR}>{"Finish Edits"}</Text>
             </View>
           </TouchableOpacity>
 
@@ -493,7 +490,7 @@ export default function Ilist({navigation}) {
         }}>
 
         <TouchableOpacity style={styles.backButt} onPress={() => goBack()}>
-          Done
+          <Text>Done</Text>
         </TouchableOpacity>
 
         <View style = {{height: '80%', maxHeight: '80%'}}>
